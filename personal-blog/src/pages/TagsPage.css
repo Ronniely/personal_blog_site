@@ -1,0 +1,93 @@
+/* 标签页面样式 */
+.tags-page {
+  width: 100%;
+}
+
+/* 页面标题样式 */
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #24292e;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #0366d6 0%, #667eea 100%);
+  border-radius: 3px;
+}
+
+/* 标签云样式 */
+.tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+/* 标签链接样式 */
+.tag-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  background-color: #f6f8fa;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #e1e4e8;
+  transition: all 0.2s;
+  color: #24292e;
+  font-weight: 500;
+}
+
+.tag-link:hover {
+  background-color: #0366d6;
+  color: white;
+  border-color: #0366d6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(3, 102, 214, 0.3);
+}
+
+/* 标签名称和数量样式 */
+.tag-name {
+  margin-right: 6px;
+}
+
+.tag-count {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .tags-cloud {
+    gap: 8px;
+  }
+  
+  .tag-link {
+    padding: 5px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  
+  .tag-link {
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+}

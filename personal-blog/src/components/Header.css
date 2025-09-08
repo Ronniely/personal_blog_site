@@ -1,0 +1,146 @@
+/* 头部样式 */
+.header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+/* 菜单按钮样式 */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  display: none;
+  padding: 8px;
+}
+
+/* Logo样式 */
+.logo h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.logo a {
+  color: #24292e;
+  text-decoration: none;
+}
+
+.logo a:hover {
+  text-decoration: none;
+}
+
+/* 桌面端导航样式 */
+.nav-desktop {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+.nav-list li a {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-list li a:hover {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+/* 搜索框样式 */
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  background-color: #f6f8fa;
+  border-radius: 20px;
+  padding: 4px 12px;
+  transition: background-color 0.2s;
+}
+
+.search-form:focus-within {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 6px 8px;
+  font-size: 14px;
+  width: 180px;
+  transition: width 0.2s;
+}
+
+.search-form:focus-within .search-input {
+  width: 220px;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .nav-desktop {
+    display: none;
+  }
+  
+  .menu-toggle {
+    display: block;
+  }
+  
+  .search-input {
+    width: 140px;
+  }
+  
+  .search-form:focus-within .search-input {
+    width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 12px 0;
+  }
+  
+  .logo h1 {
+    font-size: 20px;
+  }
+  
+  .search-container {
+    display: none;
+  }
+}
