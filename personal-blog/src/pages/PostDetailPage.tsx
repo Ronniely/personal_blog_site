@@ -1,11 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getBlogPostById } from '../data/mockData';
-import { BlogPost, Comment } from '../types';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import dayjs from 'dayjs';
 import markdownIt from 'markdown-it';
 import './PostDetailPage.css';
+
+// 定义文章类型接口
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  excerpt: string;
+  coverImage?: string;
+  createdAt: string;
+  updatedAt: string;
+  views: number;
+  likes: number;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+}
+
+interface Comment {
+  id: string;
+  postId: string;
+  author: string;
+  content: string;
+  createdAt: string;
+  avatar?: string;
+}
 
 // 初始化markdown-it实例
 const md = markdownIt({
@@ -15,8 +42,7 @@ const md = markdownIt({
   langPrefix: 'language-',
   linkify: true,
   typographer: true,
-  highlight: function(str: string, lang: string) {
-    // 这里可以添加代码高亮逻辑，目前简单返回带语言类的代码块
+  highlight: function(str: string, lang: string): string {
     if (lang && lang.length > 0) {
       return `<pre class="language-${lang}"><code class="language-${lang}">${md.utils.escapeHtml(str)}</code></pre>`;
     }
@@ -25,57 +51,58 @@ const md = markdownIt({
 });
 
 const PostDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const { postId } = useParams<{ postId: string }>();
+  const navigate = useNavigate();
+  const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [commentName, setCommentName] = useState('');
   const [commentEmail, setCommentEmail] = useState('');
 
-  // 加载博客文章
+  // 返回上一页
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  // 从localStorage加载文章数据
   useEffect(() => {
-    if (id) {
-      const postData = getBlogPostById(id);
-      if (postData) {
-        setPost(postData);
-        // 模拟加载评论数据
-        setComments([
-          {
-            id: '1',
-            postId: id,
-            author: '读者A',
-            content: '这篇文章写得真好，学到了很多东西！',
-            createdAt: '2024-01-15',
-            avatar: 'https://via.placeholder.com/50?text=A'
-          },
-          {
-            id: '2',
-            postId: id,
-            author: '读者B',
-            content: '感谢分享，期待更多优质内容！',
-            createdAt: '2024-01-16',
-            avatar: 'https://via.placeholder.com/50?text=B'
-          }
-        ]);
-      }
+    if (!postId) return;
+
+    try {
+      const storedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+      const foundPost = storedPosts.find((p: Post) => p.id === postId);
+      setPost(foundPost || null);
+
+      // 加载评论（实际应用中可以从localStorage或API加载）
+      const storedComments = JSON.parse(localStorage.getItem(`comments_${postId}`) || '[]');
+      setComments(storedComments);
+    } catch (error) {
+      console.error('Failed to load post data:', error);
+      setPost(null);
+    } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [postId]);
 
   // 处理评论提交
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newComment.trim() && commentName.trim()) {
+    if (newComment.trim() && commentName.trim() && postId) {
       const newCommentObj: Comment = {
         id: Date.now().toString(),
-        postId: id || '',
+        postId: postId,
         author: commentName,
         content: newComment,
         createdAt: dayjs().format('YYYY-MM-DD'),
         avatar: commentEmail ? `https://via.placeholder.com/50?text=${commentName.charAt(0)}` : undefined
       };
-      setComments([...comments, newCommentObj]);
+
+      const updatedComments = [...comments, newCommentObj];
+      setComments(updatedComments);
+      // 保存评论到localStorage
+      localStorage.setItem(`comments_${postId}`, JSON.stringify(updatedComments));
+
       setNewComment('');
       setCommentName('');
       setCommentEmail('');
@@ -100,7 +127,10 @@ const PostDetailPage: React.FC = () => {
   if (!post) {
     return (
       <Layout>
-        <div className="error">文章不存在或已被删除</div>
+        <div className="error">
+          <p>文章不存在或已被删除</p>
+          <button onClick={handleGoBack} className="back-button">返回上一页</button>
+        </div>
       </Layout>
     );
   }
@@ -108,6 +138,14 @@ const PostDetailPage: React.FC = () => {
   return (
     <Layout>
       <div className="post-detail-page">
+        {/* 返回按钮 */}
+        <button onClick={handleGoBack} className="back-button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          返回上一页
+        </button>
+
         {/* 文章头部信息 */}
         <div className="post-header">
           <div className="post-category">
@@ -138,17 +176,6 @@ const PostDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* 文章封面图 */}
-        {post.coverImage && (
-          <div className="post-cover">
-            <img 
-              src={post.coverImage} 
-              alt={post.title} 
-              className="cover-image"
-            />
-          </div>
-        )}
 
         {/* 文章内容 */}
         <div className="post-content">
@@ -198,84 +225,16 @@ const PostDetailPage: React.FC = () => {
 
         {/* 作者信息卡片 */}
         <div className="author-card">
-          <img 
-            src={post.author.avatar} 
-            alt={post.author.name} 
-            className="author-card-avatar"
-          />
+          <img src={post.author.avatar} alt={post.author.name} className="author-card-avatar" />
           <div className="author-card-info">
             <h3 className="author-card-name">{post.author.name}</h3>
-            <p className="author-card-bio">{post.author.bio}</p>
-            <div className="author-card-social">
-              {post.author.socialLinks?.map((link, index) => (
-                <a key={index} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={link.platform}>
-                  {link.platform === 'GitHub' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                    </svg>
-                  )}
-                  {link.platform === 'Twitter' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                    </svg>
-                  )}
-                  {link.platform === 'LinkedIn' && (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                      <rect x="2" y="9" width="4" height="12"></rect>
-                      <circle cx="4" cy="4" r="2"></circle>
-                    </svg>
-                  )}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 相关文章 */}
-        <div className="related-posts">
-          <h3 className="section-title">相关文章</h3>
-          <div className="related-posts-grid">
-            {/* 这里可以根据标签或分类显示相关文章 */}
-            {/* 暂时显示最新的3篇文章 */}
-            {post.id !== '1' && (
-              <div className="related-post-card">
-                <Link to="/post/1">
-                  <div className="related-post-image">
-                    <img src="https://via.placeholder.com/400x200?text=React+18" alt="React 18 新特性全面解析" />
-                  </div>
-                  <h4 className="related-post-title">React 18 新特性全面解析</h4>
-                </Link>
-              </div>
-            )}
-            {post.id !== '2' && (
-              <div className="related-post-card">
-                <Link to="/post/2">
-                  <div className="related-post-image">
-                    <img src="https://via.placeholder.com/400x200?text=TypeScript" alt="TypeScript 高级类型系统详解" />
-                  </div>
-                  <h4 className="related-post-title">TypeScript 高级类型系统详解</h4>
-                </Link>
-              </div>
-            )}
-            {post.id !== '3' && (
-              <div className="related-post-card">
-                <Link to="/post/3">
-                  <div className="related-post-image">
-                    <img src="https://via.placeholder.com/400x200?text=Performance" alt="前端性能优化实战指南" />
-                  </div>
-                  <h4 className="related-post-title">前端性能优化实战指南</h4>
-                </Link>
-              </div>
-            )}
+            <p className="author-card-bio">分享技术文章和学习心得</p>
           </div>
         </div>
 
         {/* 评论区 */}
         <div className="comments-section">
-          <h3 className="section-title">评论 ({comments.length})</h3>
-          
-          {/* 评论列表 */}
+          <h2 className="comments-title">评论 ({comments.length})</h2>
           <div className="comments-list">
             {comments.map(comment => (
               <div key={comment.id} className="comment-item">
@@ -287,58 +246,54 @@ const PostDetailPage: React.FC = () => {
                 <div className="comment-content">
                   <div className="comment-header">
                     <span className="comment-author">{comment.author}</span>
-                    <span className="comment-date">{dayjs(comment.createdAt).format('YYYY年MM月DD日')}</span>
+                    <span className="comment-date">{comment.createdAt}</span>
                   </div>
-                  <div className="comment-text">{comment.content}</div>
-                  <div className="comment-actions">
-                    <button className="comment-action">回复</button>
-                  </div>
+                  <p className="comment-text">{comment.content}</p>
                 </div>
               </div>
             ))}
           </div>
-          
-          {/* 发表评论表单 */}
+
+          {/* 评论表单 */}
           <div className="comment-form-container">
-            <h4 className="comment-form-title">发表评论</h4>
+            <h3 className="add-comment-title">添加评论</h3>
             <form onSubmit={handleCommentSubmit} className="comment-form">
-              <div className="comment-form-group">
-                <label htmlFor="comment-name">昵称 *</label>
+              <div className="form-group">
+                <label htmlFor="comment-name">姓名</label>
                 <input
                   type="text"
                   id="comment-name"
                   value={commentName}
                   onChange={(e) => setCommentName(e.target.value)}
-                  placeholder="请输入您的昵称"
                   required
+                  className="form-control"
                 />
               </div>
-              <div className="comment-form-group">
+              
+              <div className="form-group">
                 <label htmlFor="comment-email">邮箱 (选填)</label>
                 <input
                   type="email"
                   id="comment-email"
                   value={commentEmail}
                   onChange={(e) => setCommentEmail(e.target.value)}
-                  placeholder="请输入您的邮箱"
+                  className="form-control"
                 />
               </div>
-              <div className="comment-form-group">
-                <label htmlFor="comment-content">评论内容 *</label>
+              
+              <div className="form-group">
+                <label htmlFor="comment-text">评论内容</label>
                 <textarea
-                  id="comment-content"
+                  id="comment-text"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="请输入您的评论内容..."
-                  rows={5}
                   required
-                />
+                  className="form-control"
+                  rows={4}
+                ></textarea>
               </div>
-              <div className="comment-form-actions">
-                <button type="submit" className="submit-comment-button">
-                  发表评论
-                </button>
-              </div>
+              
+              <button type="submit" className="submit-comment-btn">提交评论</button>
             </form>
           </div>
         </div>

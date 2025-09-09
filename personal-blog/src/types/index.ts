@@ -14,6 +14,13 @@ export interface BlogPost {
   author: Author;
 }
 
+// 标签类型
+export interface Tag {
+  id: string;
+  name: string;
+  count: number;
+}
+
 // 作者信息类型
 export interface Author {
   id: string;
@@ -42,13 +49,6 @@ export interface Comment {
 
 // 分类类型
 export interface Category {
-  id: string;
-  name: string;
-  count: number;
-}
-
-// 标签类型
-export interface Tag {
   id: string;
   name: string;
   count: number;

@@ -1,24 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { categories, tags, getPopularBlogPosts, getLatestBlogPosts } from '../data/mockData';
+import { getCategories } from '../data/categoryManager';
+import { tags } from '../data/mockData';
 import './Sidebar.css';
 
 const Sidebar: React.FC = () => {
-  const popularPosts = getPopularBlogPosts(5);
-  const latestPosts = getLatestBlogPosts(5);
-
   return (
     <aside className="sidebar">
       {/* 关于博主 */}
       <div className="sidebar-section">
         <h3 className="sidebar-title">关于博主</h3>
         <div className="about-author">
-          <img 
-            src="https://via.placeholder.com/150" 
-            alt="博主头像" 
+          <img
+            src="./src/assets/download.webp"
+            alt="博主头像"
             className="author-avatar"
           />
-          <h4 className="author-name">博主名称</h4>
+          <h4 className="author-name">黄文杰</h4>
           <p className="author-bio">热爱技术和分享的开发者，专注于前端技术、编程思想和个人成长。</p>
           <div className="social-links">
             <a href="#" aria-label="GitHub">
@@ -59,11 +57,11 @@ const Sidebar: React.FC = () => {
       <div className="sidebar-section">
         <h3 className="sidebar-title">分类</h3>
         <ul className="category-list">
-          {categories.map(category => (
+          {getCategories().map(category => (
             <li key={category.id}>
               <Link to={`/category/${category.id}`} className="category-link">
                 <span className="category-name">{category.name}</span>
-                <span className="category-count">{category.count}</span>
+                <span className="category-count">{(category as any).count}</span>
               </Link>
             </li>
           ))}
@@ -75,13 +73,13 @@ const Sidebar: React.FC = () => {
         <h3 className="sidebar-title">标签</h3>
         <div className="tag-cloud">
           {tags.map(tag => (
-            <Link 
-              key={tag.id} 
-              to={`/tag/${tag.id}`} 
+            <Link
+              key={tag.id}
+              to={`/tag/${tag.id}`}
               className="tag-link"
-              style={{ 
-                fontSize: `${Math.max(12, Math.min(18, 12 + tag.count * 0.8))}px`,
-                opacity: Math.max(0.7, Math.min(1, 0.7 + tag.count * 0.05))
+              style={{
+                fontSize: `${Math.max(12, Math.min(18, 12 + (tag.count || 0) * 0.8))}px`,
+                opacity: Math.max(0.7, Math.min(1, 0.7 + (tag.count || 0) * 0.05))
               }}
             >
               {tag.name}
@@ -90,59 +88,14 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* 热门文章 */}
-      <div className="sidebar-section">
-        <h3 className="sidebar-title">热门文章</h3>
-        <ul className="post-list">
-          {popularPosts.map((post, index) => (
-            <li key={post.id} className="post-item">
-              <Link to={`/post/${post.id}`} className="post-link">
-                <span className="post-number">{index + 1}</span>
-                <div className="post-info">
-                  <h4 className="post-title">{post.title}</h4>
-                  <div className="post-meta">
-                    <span className="post-views">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                      </svg>
-                      {post.views}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* 最新文章 */}
-      <div className="sidebar-section">
-        <h3 className="sidebar-title">最新文章</h3>
-        <ul className="post-list">
-          {latestPosts.map(post => (
-            <li key={post.id} className="post-item">
-              <Link to={`/post/${post.id}`} className="post-link">
-                <div className="post-info">
-                  <h4 className="post-title">{post.title}</h4>
-                  <div className="post-meta">
-                    <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {/* 订阅区域 */}
       <div className="sidebar-section subscribe-section">
         <h3 className="sidebar-title">订阅更新</h3>
         <p className="subscribe-description">输入您的邮箱，获取最新的博客文章更新。</p>
         <form className="subscribe-form">
-          <input 
-            type="email" 
-            placeholder="您的邮箱地址" 
+          <input
+            type="email"
+            placeholder="您的邮箱地址"
             className="subscribe-input"
             required
           />

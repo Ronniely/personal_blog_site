@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 // 模拟作者数据
 const author: Author = {
   id: '1',
-  name: '博主名称',
+  name: '黄文杰',
   avatar: 'https://via.placeholder.com/150',
   bio: '热爱技术和分享的开发者，专注于前端技术、编程思想和个人成长。',
   socialLinks: [
