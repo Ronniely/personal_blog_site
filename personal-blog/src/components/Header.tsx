@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { isAuthenticated, getUserInfo, logout } from './auth';
 import './Header.css';
 
 interface HeaderProps {
@@ -8,6 +9,9 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleMenu }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
+  const userInfo = getUserInfo();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,6 +20,12 @@ const Header: React.FC<HeaderProps> = ({ toggleMenu }) => {
       console.log('搜索:', searchQuery);
       // 实际项目中可能会导航到搜索结果页
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    window.location.reload(); // 刷新页面以更新状态
   };
 
   return (
@@ -37,6 +47,20 @@ const Header: React.FC<HeaderProps> = ({ toggleMenu }) => {
               <li><Link to="/about">关于</Link></li>
               <li><Link to="/contact">联系</Link></li>
               <li><Link to="/upload">上传文章</Link></li>
+              {isLoggedIn ? (
+                <>
+                  <li className="user-info">
+                    欢迎, {userInfo?.username}
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} className="logout-button">
+                      登出
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li><Link to="/login">登录</Link></li>
+              )}
             </ul>
           </nav>
            

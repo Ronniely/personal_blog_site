@@ -6,6 +6,8 @@ import CategoriesPage from './pages/CategoriesPage';
 import TagsPage from './pages/TagsPage';
 import ArticleUpload from './pages/ArticleUpload';
 import ArticlesPage from './pages/ArticlesPage';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -17,8 +19,17 @@ function App() {
         <Route path="/post/:postId" element={<PostDetailPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/tags" element={<TagsPage />} />
-        <Route path="/upload" element={<ArticleUpload />} />
-        <Route path="/edit/:id" element={<ArticleUpload />} />
+        <Route path="/upload" element={
+          <ProtectedRoute>
+            <ArticleUpload />
+          </ProtectedRoute>
+        } />
+        <Route path="/edit/:id" element={
+          <ProtectedRoute>
+            <ArticleUpload />
+          </ProtectedRoute>
+        } />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
   );
