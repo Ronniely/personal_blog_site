@@ -1,41 +1,44 @@
 <template>
-  <div class="categories-page">
-    <div class="page-header">
-      <h1 class="page-title">文章分类</h1>
-      <p class="page-description">浏览所有的文章分类，查看相关主题的内容</p>
-    </div>
-    
-    <div class="categories-container">
-      <div class="categories-list">
-        <div 
-          v-for="category in categories"
-          :key="category.id"
-          class="category-card"
-        >
-          <router-link :to="`/category/${category.id}`" class="category-link">
-            <div class="category-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
-            </div>
-            
-            <div class="category-info">
-              <h3 class="category-name">{{ category.name }}</h3>
-              <p class="category-count">{{ category.count }} 篇文章</p>
-              <p class="category-description">{{ getCategoryDescription(category.id) }}</p>
-            </div>
-          </router-link>
+  <Layout sidebar="true">
+    <div class="categories-page">
+      <div class="page-header">
+        <h1 class="page-title">文章分类</h1>
+        <p class="page-description">浏览所有的文章分类，查看相关主题的内容</p>
+      </div>
+      
+      <div class="categories-container">
+        <div class="categories-list">
+          <div 
+            v-for="category in categories"
+            :key="category.id"
+            class="category-card"
+          >
+            <router-link :to="`/category/${category.id}`" class="category-link">
+              <div class="category-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+              
+              <div class="category-info">
+                <h3 class="category-name">{{ category.name }}</h3>
+                <p class="category-count">{{ category.count }} 篇文章</p>
+                <p class="category-description">{{ getCategoryDescription(category.id) }}</p>
+              </div>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Category } from '../types';
+import Layout from '../components/Layout.vue';
 
 // 分类数据
 const categories = ref<Category[]>([]);

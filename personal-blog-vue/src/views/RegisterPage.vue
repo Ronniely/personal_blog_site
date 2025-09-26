@@ -2,11 +2,11 @@
   <div class="login-page">
     <div class="login-container">
       <div class="login-header">
-        <h2 class="login-title">登录个人博客</h2>
-        <p class="login-subtitle">欢迎回来，请登录您的账号</p>
+        <h2 class="login-title">注册账号</h2>
+        <p class="login-subtitle">创建新账号，开始使用个人博客</p>
       </div>
       
-      <form class="login-form" @submit.prevent="handleLogin">
+      <form class="login-form" @submit.prevent="handleRegister">
         <div class="form-group">
           <label for="username" class="form-label">用户名</label>
           <input
@@ -14,9 +14,22 @@
             v-model="form.username"
             type="text"
             class="form-input"
-            placeholder="请输入用户名"
+            placeholder="请设置用户名"
             required
             autocomplete="username"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="email" class="form-label">邮箱</label>
+          <input
+            id="email"
+            v-model="form.email"
+            type="email"
+            class="form-input"
+            placeholder="请输入邮箱"
+            required
+            autocomplete="email"
           />
         </div>
         
@@ -28,9 +41,10 @@
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               class="form-input"
-              placeholder="请输入密码"
+              placeholder="请设置密码（至少6位）"
               required
-              autocomplete="current-password"
+              minlength="6"
+              autocomplete="new-password"
             />
             <button
               type="button"
@@ -47,17 +61,20 @@
           </div>
         </div>
         
-        <div class="form-options">
-          <label class="remember-me-container">
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">确认密码</label>
+          <div class="password-input-container">
             <input
-              type="checkbox"
-              v-model="form.rememberMe"
-              class="remember-me-checkbox"
+              id="confirmPassword"
+              v-model="form.confirmPassword"
+              :type="showPassword ? 'text' : 'password'"
+              class="form-input"
+              placeholder="请再次输入密码"
+              required
+              minlength="6"
+              autocomplete="new-password"
             />
-            <span class="remember-me-label">记住我</span>
-          </label>
-          
-          <a href="#" class="forgot-password-link">忘记密码？</a>
+          </div>
         </div>
         
         <button
@@ -65,13 +82,13 @@
           class="login-button"
           :disabled="loading"
         >
-          <span v-if="loading">登录中...</span>
-          <span v-else>登录</span>
+          <span v-if="loading">注册中...</span>
+          <span v-else>注册</span>
         </button>
         
         <div class="register-link-container">
           <p class="register-text">
-            还没有账号？<router-link to="/register" class="register-link">立即注册</router-link>
+            已有账号？<router-link to="/login" class="register-link">立即登录</router-link>
           </p>
         </div>
       </form>
@@ -90,8 +107,9 @@ const showPassword = ref(false);
 
 const form = ref({
   username: '',
+  email: '',
   password: '',
-  rememberMe: false
+  confirmPassword: ''
 });
 
 // 切换密码可见性
@@ -99,11 +117,33 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-// 处理登录
-const handleLogin = async () => {
+// 处理注册
+const handleRegister = async () => {
   // 表单验证
-  if (!form.value.username.trim() || !form.value.password.trim()) {
-    ElMessage.error('请填写用户名和密码');
+  if (!form.value.username.trim()) {
+    ElMessage.error('请填写用户名');
+    return;
+  }
+  
+  if (!form.value.email.trim()) {
+    ElMessage.error('请填写邮箱');
+    return;
+  }
+  
+  // 简单的邮箱格式验证
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(form.value.email)) {
+    ElMessage.error('请输入有效的邮箱地址');
+    return;
+  }
+  
+  if (!form.value.password || form.value.password.length < 6) {
+    ElMessage.error('密码至少需要6位字符');
+    return;
+  }
+  
+  if (form.value.password !== form.value.confirmPassword) {
+    ElMessage.error('两次输入的密码不一致');
     return;
   }
   
@@ -113,46 +153,37 @@ const handleLogin = async () => {
     // 模拟API请求延迟
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // 这里是模拟登录验证，实际项目中应该调用后端API
-    // 为了演示，我们使用简单的用户名和密码验证
-    if (form.value.username === 'admin' && form.value.password === 'admin123') {
-      // 登录成功，保存用户信息到localStorage
-      const userInfo = {
-        id: '1',
-        username: 'admin',
-        role: 'admin',
-        token: 'mock-jwt-token' // 实际项目中应该使用后端返回的token
-      };
-      
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-      localStorage.setItem('isLoggedIn', 'true');
-      
-      // 如果勾选了记住我，可以保存更持久的登录状态
-      if (form.value.rememberMe) {
-        // 这里可以设置更长期的存储，比如使用cookie
-      }
-      
-      ElMessage.success('登录成功');
-      
-      // 登录成功后跳转到首页或之前的页面
-      router.push('/');
-    } else {
-      // 登录失败
-      throw new Error('用户名或密码错误');
-    }
+    // 这里是模拟注册验证，实际项目中应该调用后端API
+    // 注册成功，创建用户信息
+    const userInfo = {
+      id: Date.now().toString(), // 模拟生成用户ID
+      username: form.value.username,
+      email: form.value.email,
+      role: 'user',
+      token: 'mock-jwt-token' // 实际项目中应该使用后端返回的token
+    };
+    
+    // 实际项目中，注册成功后通常会跳转到登录页，让用户手动登录
+    // 这里为了演示方便，直接登录新账号
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    localStorage.setItem('isLoggedIn', 'true');
+    
+    ElMessage.success('注册成功');
+    
+    // 注册成功后跳转到首页
+    router.push('/');
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
+    const errorMessage = error instanceof Error ? error.message : '注册失败，请稍后重试';
     ElMessage.error(errorMessage);
   } finally {
     loading.value = false;
   }
 };
 
-// 页面加载时检查是否已登录
+// 检查是否已登录，如果已登录则跳转到首页
 const checkLoginStatus = () => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
   if (isLoggedIn) {
-    // 如果已登录，直接跳转到首页
     router.push('/');
   }
 };
@@ -252,42 +283,6 @@ checkLoginStatus();
   color: #4a6fa5;
 }
 
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 5px;
-}
-
-.remember-me-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.remember-me-checkbox {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-.remember-me-label {
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-}
-
-.forgot-password-link {
-  font-size: 14px;
-  color: #4a6fa5;
-  text-decoration: none;
-}
-
-.forgot-password-link:hover {
-  text-decoration: underline;
-}
-
 .login-button {
   padding: 12px 24px;
   background-color: #4a6fa5;
@@ -338,12 +333,6 @@ checkLoginStatus();
   
   .login-title {
     font-size: 24px;
-  }
-  
-  .form-options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
   }
 }
 </style>

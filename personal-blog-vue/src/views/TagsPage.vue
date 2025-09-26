@@ -1,56 +1,59 @@
 <template>
-  <div class="tags-page">
-    <div class="page-header">
-      <h1 class="page-title">热门标签</h1>
-      <p class="page-description">浏览所有的文章标签，发现感兴趣的内容</p>
-    </div>
-    
-    <div class="tags-container">
-      <!-- 标签云 -->
-      <div class="tags-cloud">
-        <router-link 
-          v-for="tag in tags"
-          :key="tag.id"
-          :to="`/tag/${tag.id}`"
-          class="tag-item"
-          :style="getTagStyle(tag)"
-        >
-          <span class="tag-name">{{ tag.name }}</span>
-          <span class="tag-count">({{ tag.count }})</span>
-        </router-link>
+  <Layout sidebar="true">
+    <div class="tags-page">
+      <div class="page-header">
+        <h1 class="page-title">热门标签</h1>
+        <p class="page-description">浏览所有的文章标签，发现感兴趣的内容</p>
       </div>
       
-      <!-- 标签列表 -->
-      <div class="tags-list">
-        <h2 class="section-title">所有标签</h2>
-        <div class="tags-grid">
-          <div 
-            v-for="tag in sortedTags"
+      <div class="tags-container">
+        <!-- 标签云 -->
+        <div class="tags-cloud">
+          <router-link 
+            v-for="tag in tags"
             :key="tag.id"
-            class="tag-card"
+            :to="`/tag/${tag.id}`"
+            class="tag-item"
+            :style="getTagStyle(tag)"
           >
-            <router-link :to="`/tag/${tag.id}`" class="tag-link">
-              <div class="tag-card-content">
-                <div class="tag-card-header">
-                  <span class="tag-card-name">{{ tag.name }}</span>
-                  <span class="tag-card-count">{{ tag.count }} 篇</span>
+            <span class="tag-name">{{ tag.name }}</span>
+            <span class="tag-count">({{ tag.count }})</span>
+          </router-link>
+        </div>
+        
+        <!-- 标签列表 -->
+        <div class="tags-list">
+          <h2 class="section-title">所有标签</h2>
+          <div class="tags-grid">
+            <div 
+              v-for="tag in sortedTags"
+              :key="tag.id"
+              class="tag-card"
+            >
+              <router-link :to="`/tag/${tag.id}`" class="tag-link">
+                <div class="tag-card-content">
+                  <div class="tag-card-header">
+                    <span class="tag-card-name">{{ tag.name }}</span>
+                    <span class="tag-card-count">{{ tag.count }} 篇</span>
+                  </div>
+                  <div class="tag-card-stats">
+                    <span class="tag-card-posts">{{ getRandomPopularity() }} 热度</span>
+                  </div>
                 </div>
-                <div class="tag-card-stats">
-                  <span class="tag-card-posts">{{ getRandomPopularity() }} 热度</span>
-                </div>
-              </div>
-            </router-link>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Tag } from '../types';
+import Layout from '../components/Layout.vue';
 
 // 标签数据
 const tags = ref<Tag[]>([]);

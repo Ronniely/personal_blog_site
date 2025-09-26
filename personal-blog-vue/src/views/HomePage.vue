@@ -1,80 +1,82 @@
 <template>
-  <div class="home-page">
-    <div class="articles-container">
-      <h2 class="page-title">最新文章</h2>
-      
-      <!-- 文章列表 -->
-      <div class="articles-list">
-        <article 
-          v-for="article in articles" 
-          :key="article.id"
-          class="article-card"
-        >
-          <router-link :to="`/article/${article.id}`" class="article-link">
-            <div class="article-image-container">
-              <img 
-                :src="article.coverImage || '/src/assets/default-cover.jpg'"
-                :alt="article.title"
-                class="article-image"
-                loading="lazy"
-              />
-            </div>
-            
-            <div class="article-content">
-              <div class="article-meta">
-                <span class="article-category">
-                  {{ article.category?.name || '未分类' }}
-                </span>
-                <span class="article-date">{{ formatDate(article.createdAt) }}</span>
+  <Layout sidebar="true">
+    <div class="home-page">
+      <div class="articles-container">
+        <h2 class="page-title">最新文章</h2>
+        
+        <!-- 文章列表 -->
+        <div class="articles-list">
+          <article 
+            v-for="article in articles" 
+            :key="article.id"
+            class="article-card"
+          >
+            <router-link :to="`/article/${article.id}`" class="article-link">
+              <div class="article-image-container">
+                <img 
+                  :src="article.coverImage || '/src/assets/default-cover.jpg'"
+                  :alt="article.title"
+                  class="article-image"
+                  loading="lazy"
+                />
               </div>
               
-              <h3 class="article-title">{{ article.title }}</h3>
-              
-              <p class="article-excerpt">{{ article.excerpt }}</p>
-              
-              <div class="article-footer">
-                <div class="article-author">
-                  <img 
-                    :src="article.author?.avatar || '/src/assets/default-avatar.png'"
-                    :alt="article.author?.name"
-                    class="author-avatar"
-                  />
-                  <span class="author-name">{{ article.author?.name || '作者' }}</span>
+              <div class="article-content">
+                <div class="article-meta">
+                  <span class="article-category">
+                    {{ article.category?.name || '未分类' }}
+                  </span>
+                  <span class="article-date">{{ formatDate(article.createdAt) }}</span>
                 </div>
                 
-                <div class="article-stats">
-                  <span class="stat-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                    </svg>
-                    {{ article.views || 0 }}
-                  </span>
-                  <span class="stat-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                    </svg>
-                    {{ article.comments?.length || 0 }}
-                  </span>
+                <h3 class="article-title">{{ article.title }}</h3>
+                
+                <p class="article-excerpt">{{ article.excerpt }}</p>
+                
+                <div class="article-footer">
+                  <div class="article-author">
+                    <img 
+                      :src="article.author?.avatar || '/src/assets/default-avatar.png'"
+                      :alt="article.author?.name"
+                      class="author-avatar"
+                    />
+                    <span class="author-name">{{ article.author?.name || '作者' }}</span>
+                  </div>
+                  
+                  <div class="article-stats">
+                    <span class="stat-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                      </svg>
+                      {{ article.views || 0 }}
+                    </span>
+                    <span class="stat-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                      </svg>
+                      {{ article.comments?.length || 0 }}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </router-link>
-        </article>
-      </div>
-      
-      <!-- 加载更多按钮 -->
-      <div class="load-more-container">
-        <button 
-          class="load-more-button"
-          @click="loadMore"
-          :disabled="loading"
-        >
-          <span v-if="loading">加载中...</span>
-          <span v-else>加载更多</span>
-        </button>
+            </router-link>
+          </article>
+        </div>
+        
+        <!-- 加载更多按钮 -->
+        <div class="load-more-container">
+          <button 
+            class="load-more-button"
+            @click="loadMore"
+            :disabled="loading"
+          >
+            <span v-if="loading">加载中...</span>
+            <span v-else>加载更多</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -82,6 +84,7 @@ import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { BlogPost } from '../types';
 import dayjs from 'dayjs';
+import Layout from '../components/Layout.vue';
 
 // 模拟文章数据 - 实际项目中应该从API获取
 const articles = ref<BlogPost[]>([]);

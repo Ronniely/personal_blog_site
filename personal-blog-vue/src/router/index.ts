@@ -4,6 +4,7 @@ import ArticleDetail from '../views/ArticleDetail.vue';
 import CategoriesPage from '../views/CategoriesPage.vue';
 import TagsPage from '../views/TagsPage.vue';
 import LoginPage from '../views/LoginPage.vue';
+import RegisterPage from '../views/RegisterPage.vue';
 import UploadArticle from '../views/UploadArticle.vue';
 import Layout from '../components/Layout.vue';
 
@@ -13,6 +14,7 @@ const router = createRouter({
     {
       path: '/',
       component: Layout,
+      props: { sidebar: true },
       children: [
         {
           path: '',
@@ -42,6 +44,10 @@ const router = createRouter({
     {
       path: '/login',
       component: LoginPage
+    },
+    {
+      path: '/register',
+      component: RegisterPage
     }
   ]
 });
