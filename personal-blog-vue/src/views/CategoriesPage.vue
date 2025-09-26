@@ -1,5 +1,5 @@
 <template>
-  <Layout sidebar="true">
+  <Layout :sidebar="true">
     <div class="categories-page">
       <div class="page-header">
         <h1 class="page-title">文章分类</h1>
@@ -81,7 +81,7 @@ const fetchCategories = async () => {
     });
     
     // 按文章数量排序（降序）
-    initialCategories.sort((a, b) => b.count - a.count);
+    initialCategories.sort((a, b) => (b.count || 0) - (a.count || 0));
     
     categories.value = initialCategories;
   } catch (error) {

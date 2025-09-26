@@ -1,5 +1,5 @@
 <template>
-  <Layout sidebar="true">
+  <Layout :sidebar="true">
     <div class="home-page">
       <div class="articles-container">
         <h2 class="page-title">最新文章</h2>
@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import { BlogPost } from '../types';
+import type { BlogPost } from '../types';
 import dayjs from 'dayjs';
 import Layout from '../components/Layout.vue';
 
@@ -181,13 +181,14 @@ const generateMockArticles = (): BlogPost[] => {
     },
     category: {
       id: `category-${index % categories.length + 1}`,
-      name: categories[index % categories.length]
+      name: categories[index % categories.length] || '未分类'
     },
     tags: [
-      { id: `tag-${index % tags.length + 1}`, name: tags[index % tags.length] },
-      { id: `tag-${(index + 1) % tags.length + 1}`, name: tags[(index + 1) % tags.length] }
+      { id: `tag-${index % tags.length + 1}`, name: tags[index % tags.length] || '未分类标签' },
+      { id: `tag-${(index + 1) % tags.length + 1}`, name: tags[(index + 1) % tags.length] || '未分类标签' }
     ],
     views: Math.floor(Math.random() * 1000),
+    likes: Math.floor(Math.random() * 50),
     comments: []
   }));
 };

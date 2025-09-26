@@ -1,5 +1,5 @@
 <template>
-  <Layout sidebar="true">
+  <Layout :sidebar="true">
     <div class="tags-page">
       <div class="page-header">
         <h1 class="page-title">热门标签</h1>
@@ -60,7 +60,7 @@ const tags = ref<Tag[]>([]);
 
 // 按文章数量排序的标签
 const sortedTags = computed(() => {
-  return [...tags.value].sort((a, b) => b.count - a.count);
+  return [...tags.value].sort((a, b) => (b.count || 0) - (a.count || 0));
 });
 
 // 获取随机热度值（模拟数据）
@@ -75,8 +75,8 @@ const getTagStyle = (tag: Tag) => {
   const maxSize = 24;
   const sizeRange = maxSize - baseSize;
   
-  const maxCount = Math.max(...tags.value.map(t => t.count), 1);
-  const sizeFactor = Math.min(tag.count / maxCount, 1);
+  const maxCount = Math.max(...tags.value.map(t => t.count || 0), 1);
+  const sizeFactor = Math.min((tag.count || 0) / maxCount, 1);
   const fontSize = baseSize + (sizeFactor * sizeRange);
   
   // 基于文章数量计算颜色强度
@@ -124,7 +124,7 @@ const fetchTags = async () => {
     });
     
     // 只保留有文章的标签
-    const tagsWithArticles = initialTags.filter(tag => tag.count > 0);
+    const tagsWithArticles = initialTags.filter(tag => (tag.count || 0) > 0);
     
     tags.value = tagsWithArticles;
   } catch (error) {

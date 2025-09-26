@@ -15,8 +15,8 @@ export interface BlogPost {
   id: string;
   title: string;
   content: string;
-  category: string;
-  tags: string[];
+  category: { id: string; name: string };
+  tags: { id: string; name: string }[];
   excerpt: string;
   coverImage?: string;
   createdAt: string;
@@ -24,6 +24,7 @@ export interface BlogPost {
   views: number;
   likes: number;
   author: Author;
+  comments?: Comment[];
 }
 
 // 分类接口
@@ -45,8 +46,14 @@ export interface Tag {
 export interface Comment {
   id: string;
   postId: string;
-  author: string;
+  author: { id: string; name: string; avatar?: string };
   content: string;
   createdAt: string;
-  avatar?: string;
+  likes: number;
+  replies: Comment[];
+}
+
+// 扩展BlogPost接口，添加comments属性
+export interface BlogPostWithComments extends BlogPost {
+  comments?: Comment[];
 }

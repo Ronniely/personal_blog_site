@@ -210,12 +210,12 @@ const disabledDate = (time: Date) => {
 };
 
 // 处理图片上传预览
-const handlePreview: UploadProps['onPreview'] = (uploadFile) => {
+const handlePreview: UploadProps['onPreview'] = (_uploadFile) => {
   // 实际项目中可以实现图片预览功能
 };
 
 // 处理图片移除
-const handleRemove: UploadProps['onRemove'] = (uploadFile) => {
+const handleRemove: UploadProps['onRemove'] = (_uploadFile) => {
   form.value.coverImage = '';
   return true;
 };
@@ -282,7 +282,7 @@ const handleSubmit = async () => {
         name: '黄文杰',
         avatar: '/src/assets/download.webp'
       },
-      category: categories.value.find(cat => cat.id === form.value.categoryId),
+      category: categories.value.find(cat => cat.id === form.value.categoryId) || { id: 'default', name: '未分类' },
       tags: tags.value.filter(tag => form.value.tagIds.includes(tag.id)),
       views: 0,
       likes: 0,

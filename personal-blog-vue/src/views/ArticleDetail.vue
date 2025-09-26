@@ -1,5 +1,5 @@
 <template>
-  <Layout sidebar="true">
+  <Layout :sidebar="true">
     <div class="article-detail">
       <div v-if="loading" class="loading-container">
         <div class="loading-spinner"></div>
@@ -176,7 +176,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
-import { BlogPost, Comment } from '../types';
+import type { BlogPost, Comment, BlogPostWithComments } from '../types';
 import dayjs from 'dayjs';
 import Layout from '../components/Layout.vue';
 
@@ -185,7 +185,7 @@ const articleId = route.params.id as string;
 
 const loading = ref(true);
 const error = ref('');
-const article = ref<BlogPost | null>(null);
+const article = ref<BlogPostWithComments | null>(null);
 const commentText = ref('');
 
 // 格式化日期
@@ -253,6 +253,7 @@ const submitComment = async () => {
     // 模拟提交评论
     const newComment: Comment = {
       id: `comment-${Date.now()}`,
+      postId: articleId,
       content: commentText.value.trim(),
       author: {
         id: 'current-user',
@@ -271,16 +272,20 @@ const submitComment = async () => {
       const articleIndex = articlesData.findIndex(post => post.id === articleId);
       
       if (articleIndex !== -1) {
-        if (!articlesData[articleIndex].comments) {
-          articlesData[articleIndex].comments = [];
+        // 在实际应用中，这里可能需要创建一个新的对象而不是直接修改
+        // 为了简化示例，我们假设localStorage中的数据可以安全地进行类型断言
+        const articleWithComments = articlesData[articleIndex] as BlogPostWithComments;
+        if (!articleWithComments.comments) {
+          articleWithComments.comments = [];
         }
-        articlesData[articleIndex].comments.push(newComment);
+        articleWithComments.comments.push(newComment);
         localStorage.setItem('blogPosts', JSON.stringify(articlesData));
         
         // 更新当前文章数据
-        if (article.value.comments) {
-          article.value.comments.push(newComment);
+        if (!article.value.comments) {
+          article.value.comments = [];
         }
+        article.value.comments.push(newComment);
       }
     }
     

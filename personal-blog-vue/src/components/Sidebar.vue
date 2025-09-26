@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
-import { Category, Tag } from '../types';
+import type { Category, Tag } from '../types';
 
 // 获取分类数据 - 这里使用模拟数据，实际应该从API或localStorage获取
 const categories = ref<Category[]>([
