@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"blog-backend/api"
-	"blog-backend/config"
-	"blog-backend/db"
+	"github.com/jayden/personal-blog-backend/api"
+	"github.com/jayden/personal-blog-backend/config"
+	"github.com/jayden/personal-blog-backend/db"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -40,6 +40,23 @@ func main() {
 	apiRouter.HandleFunc("/login", api.LoginHandler).Methods("POST")
 	apiRouter.HandleFunc("/register", api.RegisterHandler).Methods("POST")
 	apiRouter.HandleFunc("/health", api.HealthCheck).Methods("GET")
+	
+	// 文章相关路由
+	apiRouter.HandleFunc("/articles", api.GetArticlesHandler).Methods("GET")
+	apiRouter.HandleFunc("/article", api.GetArticleDetailHandler).Methods("GET")
+	apiRouter.HandleFunc("/article", api.CreateArticleHandler).Methods("POST")
+	apiRouter.HandleFunc("/article", api.UpdateArticleHandler).Methods("PUT")
+	apiRouter.HandleFunc("/article", api.DeleteArticleHandler).Methods("DELETE")
+	
+	// 分类相关路由
+	apiRouter.HandleFunc("/categories", api.GetCategoriesHandler).Methods("GET")
+	
+	// 标签相关路由
+	apiRouter.HandleFunc("/tags", api.GetTagsHandler).Methods("GET")
+	
+	// 分类和标签文章路由
+	apiRouter.HandleFunc("/articles/category", api.GetArticlesByCategoryHandler).Methods("GET")
+	apiRouter.HandleFunc("/articles/tag", api.GetArticlesByTagHandler).Methods("GET")
 
 	// 配置CORS
 	c := cors.New(cors.Options{

@@ -83,6 +83,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { userAPI } from '../services/apiService';
 
 const router = useRouter();
 const loading = ref(false);
@@ -110,36 +111,29 @@ const handleLogin = async () => {
   loading.value = true;
   
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // 调用后端API进行登录验证
+    const response = await userAPI.login(form.value.username, form.value.password);
     
-    // 这里是模拟登录验证，实际项目中应该调用后端API
-    // 为了演示，我们使用简单的用户名和密码验证
-    if (form.value.username === 'admin' && form.value.password === 'admin123') {
-      // 登录成功，保存用户信息到localStorage
-      const userInfo = {
-        id: '1',
-        username: 'admin',
-        role: 'admin',
-        token: 'mock-jwt-token' // 实际项目中应该使用后端返回的token
-      };
-      
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-      localStorage.setItem('isLoggedIn', 'true');
-      
-      // 如果勾选了记住我，可以保存更持久的登录状态
-      if (form.value.rememberMe) {
-        // 这里可以设置更长期的存储，比如使用cookie
-      }
-      
-      ElMessage.success('登录成功');
-      
-      // 登录成功后跳转到首页或之前的页面
-      router.push('/');
-    } else {
-      // 登录失败
-      throw new Error('用户名或密码错误');
+    // 登录成功，保存用户信息和token
+    const userInfo = {
+      id: '', // 响应中没有提供id，设置为空字符串
+      username: form.value.username, // 从表单中获取用户名
+      role: 'user', // 默认为普通用户角色
+      token: response.data.token
+    };
+    
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    localStorage.setItem('isLoggedIn', 'true');
+    
+    // 如果勾选了记住我，可以保存更持久的登录状态
+    if (form.value.rememberMe) {
+      // 这里可以设置更长期的存储，比如使用cookie
     }
+    
+    ElMessage.success('登录成功');
+    
+    // 登录成功后跳转到首页或之前的页面
+    router.push('/');
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
     ElMessage.error(errorMessage);

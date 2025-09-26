@@ -54,6 +54,7 @@ import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Tag } from '../types';
 import Layout from '../components/Layout.vue';
+import { tagAPI } from '../services/apiService';
 
 // 标签数据
 const tags = ref<Tag[]>([]);
@@ -94,15 +95,31 @@ const getTagStyle = (tag: Tag) => {
 // 获取标签数据
 const fetchTags = async () => {
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // 从API获取标签数据
+    const response = await tagAPI.getTags();
     
-    // 从localStorage获取文章数据来计算每个标签的文章数量
-    const storedArticles = localStorage.getItem('blogPosts');
-    const articlesData = storedArticles ? JSON.parse(storedArticles) : [];
-    
-    // 初始化标签数据
-    const initialTags: Tag[] = [
+    if (response.code === 200 && response.data) {
+      // 只保留有文章的标签
+      const tagsWithArticles = response.data.filter((tag: Tag) => (tag.count || 0) > 0);
+      tags.value = tagsWithArticles;
+    } else {
+      console.error('获取标签数据失败:', response.msg || '未知错误');
+      // 如果API请求失败，使用本地模拟数据
+      tags.value = [
+        { id: '1', name: 'JavaScript', count: 0 },
+        { id: '2', name: 'Vue', count: 0 },
+        { id: '3', name: 'React', count: 0 },
+        { id: '4', name: 'TypeScript', count: 0 },
+        { id: '5', name: 'Node.js', count: 0 },
+        { id: '6', name: 'CSS', count: 0 },
+        { id: '7', name: 'HTML', count: 0 },
+        { id: '8', name: 'Go', count: 0 }
+      ];
+    }
+  } catch (error) {
+    console.error('获取标签数据失败:', error);
+    // 错误情况下使用模拟数据
+    tags.value = [
       { id: '1', name: 'JavaScript', count: 0 },
       { id: '2', name: 'Vue', count: 0 },
       { id: '3', name: 'React', count: 0 },
@@ -112,23 +129,6 @@ const fetchTags = async () => {
       { id: '7', name: 'HTML', count: 0 },
       { id: '8', name: 'Go', count: 0 }
     ];
-    
-    // 计算每个标签的文章数量
-    initialTags.forEach(tag => {
-      tag.count = articlesData.reduce((count: number, article: any) => {
-        if (article.tags && article.tags.some((t: any) => t.id === tag.id)) {
-          return count + 1;
-        }
-        return count;
-      }, 0);
-    });
-    
-    // 只保留有文章的标签
-    const tagsWithArticles = initialTags.filter(tag => (tag.count || 0) > 0);
-    
-    tags.value = tagsWithArticles;
-  } catch (error) {
-    console.error('获取标签数据失败:', error);
   }
 };
 

@@ -40,7 +40,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                 </svg>
-                {{ article.comments?.length || 0 }} 评论
+                {{ comments.length }} 评论
               </span>
             </div>
           </div>
@@ -119,7 +119,7 @@
         
         <!-- 评论区 -->
         <div class="comments-section">
-          <h3 class="comments-title">评论 ({{ article.comments?.length || 0 }})</h3>
+          <h3 class="comments-title">评论 ({{ comments.length }})</h3>
           
           <!-- 评论表单 -->
           <div class="comment-form">
@@ -140,7 +140,7 @@
           <!-- 评论列表 -->
           <div class="comments-list">
             <div 
-              v-for="comment in article.comments"
+              v-for="comment in comments"
               :key="comment.id"
               class="comment-item"
             >
@@ -176,17 +176,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
-import type { BlogPost, Comment, BlogPostWithComments } from '../types';
+import type { BlogPost, Comment as CommentType } from '../types';
 import dayjs from 'dayjs';
 import Layout from '../components/Layout.vue';
+import { articleAPI } from '../services/apiService';
 
 const route = useRoute();
 const articleId = route.params.id as string;
 
 const loading = ref(true);
 const error = ref('');
-const article = ref<BlogPostWithComments | null>(null);
+const article = ref<BlogPost | null>(null);
 const commentText = ref('');
+const comments = ref<CommentType[]>([]);
 
 // 格式化日期
 const formatDate = (dateString?: string) => {
@@ -215,84 +217,118 @@ const fetchArticleDetail = async () => {
   error.value = '';
   
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // 从localStorage获取文章数据
-    const storedArticles = localStorage.getItem('blogPosts');
-    if (!storedArticles) {
-      throw new Error('文章数据不存在');
+    // 从API获取文章数据
+    const response = await articleAPI.getArticleDetail(articleId);
+    if (response.code === 200 && response.data) {
+      article.value = response.data;
+      comments.value = response.data.comments || [];
+    } else {
+      error.value = response.msg || '获取文章详情失败';
+      // 使用模拟数据
+      setMockData();
     }
-    
-    const articlesData: BlogPost[] = JSON.parse(storedArticles);
-    const foundArticle = articlesData.find(post => post.id === articleId);
-    
-    if (!foundArticle) {
-      throw new Error('未找到该文章');
-    }
-    
-    // 增加阅读量
-    foundArticle.views = (foundArticle.views || 0) + 1;
-    localStorage.setItem('blogPosts', JSON.stringify(articlesData));
-    
-    article.value = foundArticle;
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '获取文章详情失败';
+    error.value = '网络错误，请稍后再试';
+    console.error('获取文章详情失败:', err);
+    // 使用模拟数据
+    setMockData();
   } finally {
     loading.value = false;
   }
 };
 
+// 设置模拟数据
+function setMockData() {
+  const mockArticle: BlogPost = {
+    id: articleId,
+    title: 'Vue 3 Composition API 实践指南',
+    content: '# Vue 3 Composition API\n\nVue 3 的 Composition API 提供了一种更灵活的方式来组织和重用组件逻辑...',
+    category: { id: '1', name: '前端开发' },
+    tags: [
+      { id: '1', name: 'Vue' },
+      { id: '2', name: 'JavaScript' }
+    ],
+    excerpt: 'Vue 3 的 Composition API 提供了一种更灵活的方式来组织和重用组件逻辑...',
+    coverImage: 'https://picsum.photos/id/1/800/400',
+    createdAt: '2023-07-15T10:30:00Z',
+    updatedAt: '2023-07-15T10:30:00Z',
+    views: 1250,
+    likes: 86,
+    author: {
+      id: '1',
+      name: '张三',
+      avatar: 'https://picsum.photos/id/64/40/40',
+      bio: '前端开发工程师'
+    },
+    comments: [
+      {
+        id: '1',
+        postId: articleId,
+        author: {
+          id: '2',
+          name: '李四',
+          avatar: 'https://picsum.photos/id/65/40/40'
+        },
+        content: '这篇文章写得很好，学到了很多！',
+        createdAt: '2023-07-16T09:15:00Z',
+        likes: 5,
+        replies: []
+      },
+      {
+        id: '2',
+        postId: articleId,
+        author: {
+          id: '3',
+          name: '王五',
+          avatar: 'https://picsum.photos/id/66/40/40'
+        },
+        content: 'Composition API 确实比 Options API 更灵活',
+        createdAt: '2023-07-16T14:30:00Z',
+        likes: 3,
+        replies: []
+      }
+    ]
+  };
+
+  article.value = mockArticle;
+  comments.value = mockArticle.comments || [];
+};
+
 // 提交评论
 const submitComment = async () => {
-  if (!commentText.value.trim() || !article.value) {
+  if (!commentText.value.trim()) {
     return;
   }
   
   try {
-    // 模拟提交评论
-    const newComment: Comment = {
-      id: `comment-${Date.now()}`,
-      postId: articleId,
-      content: commentText.value.trim(),
-      author: {
-        id: 'current-user',
-        name: '当前用户',
-        avatar: '/src/assets/default-avatar.png'
-      },
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      replies: []
-    };
+    // 从API提交评论
+    const response = await articleAPI.createComment(articleId, commentText.value.trim());
     
-    // 更新localStorage中的文章数据
-    const storedArticles = localStorage.getItem('blogPosts');
-    if (storedArticles) {
-      const articlesData: BlogPost[] = JSON.parse(storedArticles);
-      const articleIndex = articlesData.findIndex(post => post.id === articleId);
+    if (response.code === 200 && response.data) {
+      // 添加新评论到列表
+      const newComment: CommentType = {
+        id: response.data.id,
+        postId: articleId,
+        author: {
+          id: response.data.author.id,
+          name: response.data.author.name,
+          avatar: response.data.author.avatar
+        },
+        content: response.data.content,
+        createdAt: response.data.createdAt,
+        likes: 0,
+        replies: []
+      };
+      comments.value.push(newComment);
       
-      if (articleIndex !== -1) {
-        // 在实际应用中，这里可能需要创建一个新的对象而不是直接修改
-        // 为了简化示例，我们假设localStorage中的数据可以安全地进行类型断言
-        const articleWithComments = articlesData[articleIndex] as BlogPostWithComments;
-        if (!articleWithComments.comments) {
-          articleWithComments.comments = [];
-        }
-        articleWithComments.comments.push(newComment);
-        localStorage.setItem('blogPosts', JSON.stringify(articlesData));
-        
-        // 更新当前文章数据
-        if (!article.value.comments) {
-          article.value.comments = [];
-        }
-        article.value.comments.push(newComment);
-      }
+      // 清空评论输入框
+      commentText.value = '';
+    } else {
+      throw new Error(response.msg || '提交评论失败');
     }
-    
-    // 清空评论输入框
-    commentText.value = '';
   } catch (error) {
     console.error('提交评论失败:', error);
+    alert('提交评论失败，请稍后重试');
   }
 };
 

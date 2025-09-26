@@ -100,6 +100,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { userAPI } from '../services/apiService';
 
 const router = useRouter();
 const loading = ref(false);
@@ -150,28 +151,13 @@ const handleRegister = async () => {
   loading.value = true;
   
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // 调用后端API进行用户注册
+    await userAPI.register(form.value.username, form.value.password, form.value.email);
     
-    // 这里是模拟注册验证，实际项目中应该调用后端API
-    // 注册成功，创建用户信息
-    const userInfo = {
-      id: Date.now().toString(), // 模拟生成用户ID
-      username: form.value.username,
-      email: form.value.email,
-      role: 'user',
-      token: 'mock-jwt-token' // 实际项目中应该使用后端返回的token
-    };
+    ElMessage.success('注册成功，请登录');
     
-    // 实际项目中，注册成功后通常会跳转到登录页，让用户手动登录
-    // 这里为了演示方便，直接登录新账号
-    localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    localStorage.setItem('isLoggedIn', 'true');
-    
-    ElMessage.success('注册成功');
-    
-    // 注册成功后跳转到首页
-    router.push('/');
+    // 注册成功后跳转到登录页
+    router.push('/login');
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : '注册失败，请稍后重试';
     ElMessage.error(errorMessage);

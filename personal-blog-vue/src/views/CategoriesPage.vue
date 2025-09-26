@@ -39,6 +39,7 @@ import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Category } from '../types';
 import Layout from '../components/Layout.vue';
+import { categoryAPI } from '../services/apiService';
 
 // 分类数据
 const categories = ref<Category[]>([]);
@@ -58,34 +59,32 @@ const getCategoryDescription = (categoryId: string) => {
 // 获取分类数据
 const fetchCategories = async () => {
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // 从API获取分类数据
+    const response = await categoryAPI.getCategories();
     
-    // 从localStorage获取文章数据来计算每个分类的文章数量
-    const storedArticles = localStorage.getItem('blogPosts');
-    const articlesData = storedArticles ? JSON.parse(storedArticles) : [];
-    
-    // 初始化分类数据
-    const initialCategories: Category[] = [
+    if (response.code === 200 && response.data) {
+      // 按文章数量排序（降序）
+      const sortedCategories = response.data.sort((a: Category, b: Category) => (b.count || 0) - (a.count || 0));
+      categories.value = sortedCategories;
+    } else {
+      console.error('获取分类数据失败:', response.msg || '未知错误');
+      // 如果API请求失败，使用本地模拟数据
+      categories.value = [
+        { id: '1', name: '前端开发', count: 0 },
+        { id: '2', name: '后端开发', count: 0 },
+        { id: '3', name: '数据库', count: 0 },
+        { id: '4', name: '工具技巧', count: 0 }
+      ];
+    }
+  } catch (error) {
+    console.error('获取分类数据失败:', error);
+    // 错误情况下使用模拟数据
+    categories.value = [
       { id: '1', name: '前端开发', count: 0 },
       { id: '2', name: '后端开发', count: 0 },
       { id: '3', name: '数据库', count: 0 },
       { id: '4', name: '工具技巧', count: 0 }
     ];
-    
-    // 计算每个分类的文章数量
-    initialCategories.forEach(category => {
-      category.count = articlesData.filter((article: any) => 
-        article.category && article.category.id === category.id
-      ).length;
-    });
-    
-    // 按文章数量排序（降序）
-    initialCategories.sort((a, b) => (b.count || 0) - (a.count || 0));
-    
-    categories.value = initialCategories;
-  } catch (error) {
-    console.error('获取分类数据失败:', error);
   }
 };
 

@@ -85,6 +85,7 @@ import { RouterLink } from 'vue-router';
 import type { BlogPost } from '../types';
 import dayjs from 'dayjs';
 import Layout from '../components/Layout.vue';
+import { articleAPI } from '../services/apiService';
 
 // 模拟文章数据 - 实际项目中应该从API获取
 const articles = ref<BlogPost[]>([]);
@@ -103,31 +104,48 @@ const loadArticles = async () => {
   loading.value = true;
   
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // 从API获取文章数据
+    const response = await articleAPI.getArticles(currentPage.value, pageSize);
     
-    // 模拟从localStorage获取文章数据
-    const storedArticles = localStorage.getItem('blogPosts');
-    let articlesData: BlogPost[] = [];
-    
-    if (storedArticles) {
-      articlesData = JSON.parse(storedArticles);
-      // 按创建时间排序，最新的在前
-      articlesData.sort((a, b) => {
-        const dateA = new Date(a.createdAt || '').getTime();
-        const dateB = new Date(b.createdAt || '').getTime();
-        return dateB - dateA;
-      });
+    if (response.code === 200) {
+      const newArticles = response.data || [];
+      
+      if (currentPage.value === 1) {
+        articles.value = newArticles;
+      } else {
+        articles.value.push(...newArticles);
+      }
+      
+      // 如果没有更多文章，禁用加载更多按钮
+      if (newArticles.length < pageSize) {
+        isNoMoreArticles.value = true;
+      }
     } else {
-      // 如果没有存储的数据，使用模拟数据
-      articlesData = generateMockArticles();
-      localStorage.setItem('blogPosts', JSON.stringify(articlesData));
+      // API请求失败，使用模拟数据
+      console.warn('从API获取文章失败，使用模拟数据');
+      const mockArticles = generateMockArticles();
+      const startIndex = (currentPage.value - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedArticles = mockArticles.slice(startIndex, endIndex);
+      
+      if (currentPage.value === 1) {
+        articles.value = paginatedArticles;
+      } else {
+        articles.value.push(...paginatedArticles);
+      }
+      
+      if (paginatedArticles.length < pageSize) {
+        isNoMoreArticles.value = true;
+      }
     }
+  } catch (error) {
+    console.error('加载文章失败:', error);
     
-    // 分页
+    // 网络错误时使用模拟数据
+    const mockArticles = generateMockArticles();
     const startIndex = (currentPage.value - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const paginatedArticles = articlesData.slice(startIndex, endIndex);
+    const paginatedArticles = mockArticles.slice(startIndex, endIndex);
     
     if (currentPage.value === 1) {
       articles.value = paginatedArticles;
@@ -135,18 +153,23 @@ const loadArticles = async () => {
       articles.value.push(...paginatedArticles);
     }
     
-    // 停止加载状态
-    loading.value = false;
-  } catch (error) {
-    console.error('加载文章失败:', error);
+    if (paginatedArticles.length < pageSize) {
+      isNoMoreArticles.value = true;
+    }
+  } finally {
     loading.value = false;
   }
 };
 
+// 标记是否没有更多文章
+const isNoMoreArticles = ref(false);
+
 // 加载更多文章
 const loadMore = () => {
-  currentPage.value++;
-  loadArticles();
+  if (!loading.value && !isNoMoreArticles.value) {
+    currentPage.value++;
+    loadArticles();
+  }
 };
 
 // 生成模拟文章数据

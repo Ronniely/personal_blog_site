@@ -1,4 +1,4 @@
-module blog-backend
+module github.com/jayden/personal-blog-backend
 
 go 1.21
 

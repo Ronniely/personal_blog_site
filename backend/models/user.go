@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"blog-backend/db"
+	"github.com/jayden/personal-blog-backend/db"
 	"golang.org/x/crypto/bcrypt"
 )
 

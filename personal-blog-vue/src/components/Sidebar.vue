@@ -74,30 +74,85 @@
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Category, Tag } from '../types';
+import { categoryAPI, tagAPI } from '../services/apiService';
 
-// 获取分类数据 - 这里使用模拟数据，实际应该从API或localStorage获取
-const categories = ref<Category[]>([
-  { id: '1', name: '前端开发', count: 10 },
-  { id: '2', name: '后端开发', count: 5 },
-  { id: '3', name: '数据库', count: 3 },
-  { id: '4', name: '工具技巧', count: 8 }
-]);
+// 分类数据
+const categories = ref<Category[]>([]);
 
 // 标签数据
-const tags = ref<Tag[]>([
-  { id: '1', name: 'JavaScript', count: 15 },
-  { id: '2', name: 'Vue', count: 8 },
-  { id: '3', name: 'React', count: 6 },
-  { id: '4', name: 'TypeScript', count: 12 },
-  { id: '5', name: 'Node.js', count: 7 },
-  { id: '6', name: 'CSS', count: 9 },
-  { id: '7', name: 'HTML', count: 4 },
-  { id: '8', name: 'Go', count: 3 }
-]);
+const tags = ref<Tag[]>([]);
 
-onMounted(() => {
-  // 实际项目中，这里应该从API或localStorage加载分类和标签数据
-  // 可以调用之前创建的categoryManager中的函数
+// 从API获取分类数据
+const fetchCategories = async () => {
+  try {
+    const response = await categoryAPI.getCategories();
+    if (response.code === 200 && response.data) {
+      // 按文章数量排序（降序）
+      const sortedCategories = response.data.sort((a: Category, b: Category) => (b.count || 0) - (a.count || 0));
+      categories.value = sortedCategories;
+    } else {
+      console.error('获取分类数据失败:', response.msg || '未知错误');
+      // 如果API请求失败，使用本地模拟数据
+      categories.value = [
+        { id: '1', name: '前端开发', count: 0 },
+        { id: '2', name: '后端开发', count: 0 },
+        { id: '3', name: '数据库', count: 0 },
+        { id: '4', name: '工具技巧', count: 0 }
+      ];
+    }
+  } catch (error) {
+    console.error('获取分类数据失败:', error);
+    // 错误情况下使用模拟数据
+    categories.value = [
+      { id: '1', name: '前端开发', count: 0 },
+      { id: '2', name: '后端开发', count: 0 },
+      { id: '3', name: '数据库', count: 0 },
+      { id: '4', name: '工具技巧', count: 0 }
+    ];
+  }
+};
+
+// 从API获取标签数据
+const fetchTags = async () => {
+  try {
+    const response = await tagAPI.getTags();
+    if (response.code === 200 && response.data) {
+      // 只保留有文章的标签
+      const tagsWithArticles = response.data.filter((tag: Tag) => (tag.count || 0) > 0);
+      tags.value = tagsWithArticles;
+    } else {
+      console.error('获取标签数据失败:', response.msg || '未知错误');
+      // 如果API请求失败，使用本地模拟数据
+      tags.value = [
+        { id: '1', name: 'JavaScript', count: 0 },
+        { id: '2', name: 'Vue', count: 0 },
+        { id: '3', name: 'React', count: 0 },
+        { id: '4', name: 'TypeScript', count: 0 },
+        { id: '5', name: 'Node.js', count: 0 },
+        { id: '6', name: 'CSS', count: 0 },
+        { id: '7', name: 'HTML', count: 0 },
+        { id: '8', name: 'Go', count: 0 }
+      ];
+    }
+  } catch (error) {
+    console.error('获取标签数据失败:', error);
+    // 错误情况下使用模拟数据
+    tags.value = [
+      { id: '1', name: 'JavaScript', count: 0 },
+      { id: '2', name: 'Vue', count: 0 },
+      { id: '3', name: 'React', count: 0 },
+      { id: '4', name: 'TypeScript', count: 0 },
+      { id: '5', name: 'Node.js', count: 0 },
+      { id: '6', name: 'CSS', count: 0 },
+      { id: '7', name: 'HTML', count: 0 },
+      { id: '8', name: 'Go', count: 0 }
+    ];
+  }
+};
+
+// 组件挂载时获取分类和标签数据
+onMounted(async () => {
+  await Promise.all([fetchCategories(), fetchTags()]);
 });
 </script>
 

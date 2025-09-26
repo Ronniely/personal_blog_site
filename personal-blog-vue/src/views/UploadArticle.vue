@@ -166,7 +166,8 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
 import type { UploadFile, UploadProps } from 'element-plus';
-import type { BlogPost, Category, Tag } from '../types';
+import type { Category, Tag } from '../types';
+import { categoryAPI, tagAPI, articleAPI } from '../services/apiService';
 
 const router = useRouter();
 
@@ -183,23 +184,72 @@ const form = ref({
 });
 
 // 分类和标签数据
-const categories = ref<Category[]>([
-  { id: '1', name: '前端开发' },
-  { id: '2', name: '后端开发' },
-  { id: '3', name: '数据库' },
-  { id: '4', name: '工具技巧' }
-]);
+const categories = ref<Category[]>([]);
+const tags = ref<Tag[]>([]);
 
-const tags = ref<Tag[]>([
-  { id: '1', name: 'JavaScript' },
-  { id: '2', name: 'Vue' },
-  { id: '3', name: 'React' },
-  { id: '4', name: 'TypeScript' },
-  { id: '5', name: 'Node.js' },
-  { id: '6', name: 'CSS' },
-  { id: '7', name: 'HTML' },
-  { id: '8', name: 'Go' }
-]);
+// 从API获取分类数据
+const fetchCategories = async () => {
+  try {
+    const response = await categoryAPI.getCategories();
+    if (response.code === 200 && response.data) {
+      categories.value = response.data;
+    } else {
+      console.error('获取分类数据失败:', response.msg || '未知错误');
+      // 如果API请求失败，使用本地模拟数据
+      categories.value = [
+        { id: '1', name: '前端开发' },
+        { id: '2', name: '后端开发' },
+        { id: '3', name: '数据库' },
+        { id: '4', name: '工具技巧' }
+      ];
+    }
+  } catch (error) {
+    console.error('获取分类数据失败:', error);
+    // 错误情况下使用模拟数据
+    categories.value = [
+      { id: '1', name: '前端开发' },
+      { id: '2', name: '后端开发' },
+      { id: '3', name: '数据库' },
+      { id: '4', name: '工具技巧' }
+    ];
+  }
+};
+
+// 从API获取标签数据
+const fetchTags = async () => {
+  try {
+    const response = await tagAPI.getTags();
+    if (response.code === 200 && response.data) {
+      tags.value = response.data;
+    } else {
+      console.error('获取标签数据失败:', response.msg || '未知错误');
+      // 如果API请求失败，使用本地模拟数据
+      tags.value = [
+        { id: '1', name: 'JavaScript' },
+        { id: '2', name: 'Vue' },
+        { id: '3', name: 'React' },
+        { id: '4', name: 'TypeScript' },
+        { id: '5', name: 'Node.js' },
+        { id: '6', name: 'CSS' },
+        { id: '7', name: 'HTML' },
+        { id: '8', name: 'Go' }
+      ];
+    }
+  } catch (error) {
+    console.error('获取标签数据失败:', error);
+    // 错误情况下使用模拟数据
+    tags.value = [
+      { id: '1', name: 'JavaScript' },
+      { id: '2', name: 'Vue' },
+      { id: '3', name: 'React' },
+      { id: '4', name: 'TypeScript' },
+      { id: '5', name: 'Node.js' },
+      { id: '6', name: 'CSS' },
+      { id: '7', name: 'HTML' },
+      { id: '8', name: 'Go' }
+    ];
+  }
+};
 
 const loading = ref(false);
 const coverImageFileList = ref<UploadFile[]>([]);
@@ -265,40 +315,29 @@ const handleSubmit = async () => {
   loading.value = true;
 
   try {
-    // 模拟API请求延迟
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // 创建新文章对象
-    const newArticle: BlogPost = {
-      id: `post-${Date.now()}`,
+    // 准备文章数据
+    const articleData = {
       title: form.value.title,
       content: form.value.content,
       excerpt: form.value.excerpt || form.value.content.substring(0, 150) + '...',
       coverImage: form.value.coverImage,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      author: {
-        id: '1',
-        name: '黄文杰',
-        avatar: '/src/assets/download.webp'
-      },
-      category: categories.value.find(cat => cat.id === form.value.categoryId) || { id: 'default', name: '未分类' },
-      tags: tags.value.filter(tag => form.value.tagIds.includes(tag.id)),
-      views: 0,
-      likes: 0,
-      comments: []
+      categoryId: form.value.categoryId,
+      tagIds: form.value.tagIds,
+      published: form.value.published,
+      publishDate: form.value.publishDate ? form.value.publishDate.toISOString() : null
     };
 
-    // 保存到localStorage
-    const storedArticles = localStorage.getItem('blogPosts');
-    const articlesData: BlogPost[] = storedArticles ? JSON.parse(storedArticles) : [];
-    articlesData.unshift(newArticle); // 添加到数组开头
-    localStorage.setItem('blogPosts', JSON.stringify(articlesData));
-
-    ElMessage.success(form.value.published ? '文章发布成功' : '草稿保存成功');
-
-    // 跳转回首页或文章列表页
-    router.push('/');
+    // 提交到API
+    const response = await articleAPI.createArticle(articleData);
+    
+    if (response.code === 200) {
+      ElMessage.success(form.value.published ? '文章发布成功' : '草稿保存成功');
+      
+      // 跳转回首页
+      router.push('/');
+    } else {
+      throw new Error(response.msg || '发布失败，请稍后重试');
+    }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : '操作失败，请稍后重试';
     ElMessage.error(errorMessage);
@@ -328,9 +367,10 @@ const checkLoginStatus = () => {
   }
 };
 
-// 组件挂载时检查登录状态
-onMounted(() => {
+// 组件挂载时检查登录状态并获取分类和标签数据
+onMounted(async () => {
   checkLoginStatus();
+  await Promise.all([fetchCategories(), fetchTags()]);
 });
 </script>
 
