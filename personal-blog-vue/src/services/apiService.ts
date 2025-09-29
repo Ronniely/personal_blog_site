@@ -1,6 +1,6 @@
 // API服务封装
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = 'http://localhost:8083/api';
 
 // 请求配置接口
 interface RequestOptions {
@@ -28,7 +28,12 @@ const request = async <T>(url: string, options: RequestOptions = {}): Promise<T>
   };
 
   try {
+    console.log('发送请求到:', `${BASE_URL}${url}`);
+    console.log('请求配置:', config);
+    
     const response = await fetch(`${BASE_URL}${url}`, config);
+    
+    console.log('收到响应状态:', response.status);
     
     if (!response.ok) {
       // 如果是401未授权错误，清除本地存储并跳转到登录页
@@ -37,10 +42,27 @@ const request = async <T>(url: string, options: RequestOptions = {}): Promise<T>
         localStorage.removeItem('isLoggedIn');
         window.location.href = '/login';
       }
-      throw new Error(`HTTP错误! 状态码: ${response.status}`);
+      
+      // 尝试解析错误响应体
+      let errorMessage = `HTTP错误! 状态码: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData.Message) {
+          errorMessage = errorData.Message;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch (e) {
+        // 如果无法解析JSON，使用默认错误消息
+        console.log('无法解析错误响应体:', e);
+      }
+      
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('响应数据:', data);
+    return data;
   } catch (error) {
     console.error('API请求失败:', error);
     throw error;
@@ -121,7 +143,7 @@ export const tagAPI = {
 export const userAPI = {
   // 登录
   login: (username: string, password: string) => {
-    return request<{ code: number; data: { token: string }; msg: string }>(`/login`, {
+    return request<{ Token: string; Message: string }>(`/login`, {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     });

@@ -7,12 +7,44 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/gorilla/mux"
 	"github.com/jayden/personal-blog-backend/api"
 	"github.com/jayden/personal-blog-backend/config"
 	"github.com/jayden/personal-blog-backend/db"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 )
+
+// 自定义CORS中间件 - 详细日志版本
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 详细记录请求信息用于调试
+		origin := r.Header.Get("Origin")
+		log.Printf("收到请求: %s %s", r.Method, r.URL)
+		log.Printf("请求来源: %s", origin)
+		log.Printf("请求头: %v", r.Header)
+
+		// 明确设置允许的源
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+
+		// 设置其他必要的CORS头
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Origin, X-Requested-With, Accept")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+		w.Header().Set("Vary", "Origin")
+
+		// 处理预检请求
+		if r.Method == "OPTIONS" {
+			log.Printf("处理预检请求: %s", r.URL)
+			log.Printf("预检请求返回的CORS头: %v", w.Header())
+			// 预检请求只返回头信息，不处理实际业务逻辑
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		// 继续处理请求
+		next.ServeHTTP(w, r)
+	})
+}
 
 func main() {
 	// 加载配置
@@ -40,44 +72,36 @@ func main() {
 	apiRouter.HandleFunc("/login", api.LoginHandler).Methods("POST")
 	apiRouter.HandleFunc("/register", api.RegisterHandler).Methods("POST")
 	apiRouter.HandleFunc("/health", api.HealthCheck).Methods("GET")
-	
+
 	// 文章相关路由
 	apiRouter.HandleFunc("/articles", api.GetArticlesHandler).Methods("GET")
 	apiRouter.HandleFunc("/article", api.GetArticleDetailHandler).Methods("GET")
 	apiRouter.HandleFunc("/article", api.CreateArticleHandler).Methods("POST")
 	apiRouter.HandleFunc("/article", api.UpdateArticleHandler).Methods("PUT")
 	apiRouter.HandleFunc("/article", api.DeleteArticleHandler).Methods("DELETE")
-	
+
 	// 分类相关路由
 	apiRouter.HandleFunc("/categories", api.GetCategoriesHandler).Methods("GET")
-	
+
 	// 标签相关路由
 	apiRouter.HandleFunc("/tags", api.GetTagsHandler).Methods("GET")
-	
+
 	// 分类和标签文章路由
 	apiRouter.HandleFunc("/articles/category", api.GetArticlesByCategoryHandler).Methods("GET")
 	apiRouter.HandleFunc("/articles/tag", api.GetArticlesByTagHandler).Methods("GET")
 
-	// 配置CORS
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:3000", "http://localhost:3001"}, // 支持多个前端开发服务器地址
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: true,
-	})
-
-	// 包装路由器以处理CORS
-	handler := c.Handler(r)
+	// 应用自定义CORS中间件
+	handler := enableCORS(r)
 
 	// 启动服务器
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8083",
 		Handler: handler,
 	}
 
 	// 启动服务器在后台
 	go func() {
-		log.Println("Server starting on :8080")
+		log.Println("Server starting on :8083")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("启动服务器失败: %v", err)
 		}

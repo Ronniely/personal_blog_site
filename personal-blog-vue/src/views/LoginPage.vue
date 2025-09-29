@@ -5,40 +5,22 @@
         <h2 class="login-title">登录个人博客</h2>
         <p class="login-subtitle">欢迎回来，请登录您的账号</p>
       </div>
-      
+
       <form class="login-form" @submit.prevent="handleLogin">
         <div class="form-group">
           <label for="username" class="form-label">用户名</label>
-          <input
-            id="username"
-            v-model="form.username"
-            type="text"
-            class="form-input"
-            placeholder="请输入用户名"
-            required
-            autocomplete="username"
-          />
+          <input id="username" v-model="form.username" type="text" class="form-input" placeholder="请输入用户名" required
+            autocomplete="username" />
         </div>
-        
+
         <div class="form-group">
           <label for="password" class="form-label">密码</label>
           <div class="password-input-container">
-            <input
-              id="password"
-              v-model="form.password"
-              :type="showPassword ? 'text' : 'password'"
-              class="form-input"
-              placeholder="请输入密码"
-              required
-              autocomplete="current-password"
-            />
-            <button
-              type="button"
-              class="toggle-password-button"
-              @click="togglePasswordVisibility"
-              aria-label="切换密码可见性"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" class="form-input"
+              placeholder="请输入密码" required autocomplete="current-password" />
+            <button type="button" class="toggle-password-button" @click="togglePasswordVisibility" aria-label="切换密码可见性">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path v-if="showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle v-if="showPassword" cx="12" cy="12" r="3"></circle>
                 <path v-else d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -46,29 +28,21 @@
             </button>
           </div>
         </div>
-        
+
         <div class="form-options">
           <label class="remember-me-container">
-            <input
-              type="checkbox"
-              v-model="form.rememberMe"
-              class="remember-me-checkbox"
-            />
+            <input type="checkbox" v-model="form.rememberMe" class="remember-me-checkbox" />
             <span class="remember-me-label">记住我</span>
           </label>
-          
+
           <a href="#" class="forgot-password-link">忘记密码？</a>
         </div>
-        
-        <button
-          type="submit"
-          class="login-button"
-          :disabled="loading"
-        >
+
+        <button type="submit" class="login-button" :disabled="loading">
           <span v-if="loading">登录中...</span>
           <span v-else>登录</span>
         </button>
-        
+
         <div class="register-link-container">
           <p class="register-text">
             还没有账号？<router-link to="/register" class="register-link">立即注册</router-link>
@@ -102,43 +76,63 @@ const togglePasswordVisibility = () => {
 
 // 处理登录
 const handleLogin = async () => {
+  console.log('开始登录流程');
   // 表单验证
   if (!form.value.username.trim() || !form.value.password.trim()) {
     ElMessage.error('请填写用户名和密码');
+    console.log('表单验证失败：用户名或密码为空');
     return;
   }
-  
+
+  console.log('表单验证通过，准备发送登录请求，用户名:', form.value.username);
   loading.value = true;
-  
+
   try {
     // 调用后端API进行登录验证
+    console.log('开始调用userAPI.login');
     const response = await userAPI.login(form.value.username, form.value.password);
-    
+
+    console.log('登录API调用成功，响应数据:', response);
+
     // 登录成功，保存用户信息和token
     const userInfo = {
       id: '', // 响应中没有提供id，设置为空字符串
       username: form.value.username, // 从表单中获取用户名
       role: 'user', // 默认为普通用户角色
-      token: response.data.token
+      token: response.Token
     };
-    
+
     localStorage.setItem('userInfo', JSON.stringify(userInfo));
     localStorage.setItem('isLoggedIn', 'true');
-    
+    console.log('用户信息已保存到localStorage');
+
     // 如果勾选了记住我，可以保存更持久的登录状态
     if (form.value.rememberMe) {
+      console.log('用户选择了记住我');
       // 这里可以设置更长期的存储，比如使用cookie
     }
-    
+
     ElMessage.success('登录成功');
-    
+    console.log('显示登录成功消息');
+
     // 登录成功后跳转到首页或之前的页面
+    console.log('准备跳转到首页');
     router.push('/');
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : '登录失败，请稍后重试';
+    console.error('登录过程中发生错误:', error);
+    // 更详细的错误处理
+    let errorMessage = '登录失败，请稍后重试';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+    console.log('错误类型:', typeof error);
+    console.log('错误内容:', error);
     ElMessage.error(errorMessage);
   } finally {
     loading.value = false;
+    console.log('登录流程结束');
   }
 };
 
@@ -329,11 +323,11 @@ checkLoginStatus();
   .login-container {
     padding: 30px 20px;
   }
-  
+
   .login-title {
     font-size: 24px;
   }
-  
+
   .form-options {
     flex-direction: column;
     align-items: flex-start;
