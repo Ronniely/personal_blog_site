@@ -9,12 +9,18 @@ import (
 )
 
 // User 用户模型
+// @Description 用户信息
 type User struct {
-	ID           int       `json:"id"`
-	Username     string    `json:"username"`
-	Password     string    `json:"password,omitempty"` // omitempty 表示在序列化时，如果值为空则忽略该字段
-	Email        string    `json:"email"`
-	CreatedTime  time.Time `json:"created_time"`
+	// 用户ID
+	ID int `json:"id" example:"1"`
+	// 用户名
+	Username string `json:"username" example:"admin"`
+	// 密码（在序列化时忽略）
+	Password string `json:"password,omitempty"` // omitempty 表示在序列化时，如果值为空则忽略该字段
+	// 邮箱
+	Email string `json:"email" example:"admin@example.com"`
+	// 创建时间
+	CreatedTime time.Time `json:"created_time" example:"2023-01-01T00:00:00Z"`
 }
 
 // CreateUser 创建新用户

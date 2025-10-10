@@ -3,14 +3,19 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/jayden/personal-blog-backend/db"
 )
 
 // Category 分类模型
+// @Description 文章分类信息
 type Category struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Count int    `json:"count"`
+	// 分类ID
+	ID string `json:"id" example:"1"`
+	// 分类名称
+	Name string `json:"name" example:"技术"`
+	// 文章数量
+	Count int `json:"count" example:"10"`
 }
 
 // GetCategories 获取所有分类

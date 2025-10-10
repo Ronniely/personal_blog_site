@@ -3,26 +3,42 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jayden/personal-blog-backend/db"
 	"time"
+
+	"github.com/jayden/personal-blog-backend/db"
 )
 
 // Article 文章模型
+// @Description 文章信息
 type Article struct {
-	ID          string    `json:"id"`
-	Title       string    `json:"title"`
-	Content     string    `json:"content"`
-	Excerpt     string    `json:"excerpt"`
-	CoverImage  string    `json:"coverImage"`
-	CategoryID  string    `json:"categoryId"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	Views       int       `json:"views"`
-	Likes       int       `json:"likes"`
-	AuthorID    string    `json:"authorId"`
-	Published   bool      `json:"published"`
-	Category    *Category `json:"category"`
-	Tags        []*Tag    `json:"tags"`
+	// 文章ID
+	ID string `json:"id" example:"1"`
+	// 文章标题
+	Title string `json:"title" example:"文章标题"`
+	// 文章内容
+	Content string `json:"content" example:"文章内容..."`
+	// 文章摘要
+	Excerpt string `json:"excerpt" example:"文章摘要..."`
+	// 封面图片URL
+	CoverImage string `json:"coverImage" example:"https://example.com/image.jpg"`
+	// 分类ID
+	CategoryID string `json:"categoryId" example:"1"`
+	// 创建时间
+	CreatedAt time.Time `json:"createdAt" example:"2023-01-01T00:00:00Z"`
+	// 更新时间
+	UpdatedAt time.Time `json:"updatedAt" example:"2023-01-01T00:00:00Z"`
+	// 浏览量
+	Views int `json:"views" example:"100"`
+	// 点赞数
+	Likes int `json:"likes" example:"10"`
+	// 作者ID
+	AuthorID string `json:"authorId" example:"1"`
+	// 是否发布
+	Published bool `json:"published" example:"true"`
+	// 分类信息
+	Category *Category `json:"category"`
+	// 标签列表
+	Tags []*Tag `json:"tags"`
 }
 
 // CreateArticle 创建新文章
@@ -145,7 +161,7 @@ func UpdateArticle(article *Article) error {
 		if err != nil {
 			return fmt.Errorf("更新旧分类计数失败: %w", err)
 		}
-		
+
 		// 增加新分类计数
 		_, err = tx.Exec("UPDATE 分类表 SET count = count + 1 WHERE id = ?", article.CategoryID)
 		if err != nil {
@@ -173,7 +189,7 @@ func UpdateArticle(article *Article) error {
 		if err != nil {
 			return fmt.Errorf("添加新标签关联失败: %w", err)
 		}
-		
+
 		// 增加新标签计数
 		_, err = tx.Exec("UPDATE 标签表 SET count = count + 1 WHERE id = ?", newTag.ID)
 		if err != nil {
@@ -247,21 +263,21 @@ func GetArticles(limit, offset int) ([]*Article, error) {
 		if scanErr != nil {
 			return nil, fmt.Errorf("扫描文章行失败: %w", scanErr)
 		}
-		
+
 		// 获取分类信息
 		category, err := GetCategoryByID(article.CategoryID)
 		if err != nil {
 			return nil, fmt.Errorf("获取文章分类失败: %w", err)
 		}
 		article.Category = category
-		
+
 		// 获取标签信息
 		tags, err := GetTagsByArticleID(article.ID)
 		if err != nil {
 			return nil, fmt.Errorf("获取文章标签失败: %w", err)
 		}
 		article.Tags = tags
-		
+
 		articles = append(articles, article)
 	}
 
@@ -292,21 +308,21 @@ func GetArticlesByCategoryID(categoryID string, limit, offset int) ([]*Article, 
 		if scanErr != nil {
 			return nil, fmt.Errorf("扫描分类文章行失败: %w", scanErr)
 		}
-		
+
 		// 获取分类信息
 		category, err := GetCategoryByID(article.CategoryID)
 		if err != nil {
 			return nil, fmt.Errorf("获取分类信息失败: %w", err)
 		}
 		article.Category = category
-		
+
 		// 获取标签信息
 		tags, err := GetTagsByArticleID(article.ID)
 		if err != nil {
 			return nil, fmt.Errorf("获取标签信息失败: %w", err)
 		}
 		article.Tags = tags
-		
+
 		articles = append(articles, article)
 	}
 
@@ -337,21 +353,21 @@ func GetArticlesByTagID(tagID string, limit, offset int) ([]*Article, error) {
 		if scanErr != nil {
 			return nil, fmt.Errorf("扫描标签文章行失败: %w", scanErr)
 		}
-		
+
 		// 获取分类信息
 		category, err := GetCategoryByID(article.CategoryID)
 		if err != nil {
 			return nil, fmt.Errorf("获取分类信息失败: %w", err)
 		}
 		article.Category = category
-		
+
 		// 获取标签信息
 		tags, err := GetTagsByArticleID(article.ID)
 		if err != nil {
 			return nil, fmt.Errorf("获取标签信息失败: %w", err)
 		}
 		article.Tags = tags
-		
+
 		articles = append(articles, article)
 	}
 

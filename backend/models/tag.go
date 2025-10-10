@@ -3,14 +3,19 @@ package models
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/jayden/personal-blog-backend/db"
 )
 
 // Tag 标签模型
+// @Description 文章标签信息
 type Tag struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Count int    `json:"count"`
+	// 标签ID
+	ID string `json:"id" example:"1"`
+	// 标签名称
+	Name string `json:"name" example:"Go"`
+	// 文章数量
+	Count int `json:"count" example:"5"`
 }
 
 // GetTags 获取所有标签

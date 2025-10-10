@@ -1,3 +1,8 @@
+// @title 博客系统 API
+// @version 1.0
+// @description 这是一个博客系统的 API 文档
+// @host localhost:8083
+// @BasePath /api
 package main
 
 import (
@@ -11,6 +16,8 @@ import (
 	"github.com/jayden/personal-blog-backend/api"
 	"github.com/jayden/personal-blog-backend/config"
 	"github.com/jayden/personal-blog-backend/db"
+	_ "github.com/jayden/personal-blog-backend/docs" // 这里需要导入 docs 包
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // 自定义CORS中间件 - 详细日志版本
@@ -46,6 +53,9 @@ func enableCORS(next http.Handler) http.Handler {
 	})
 }
 
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	// 加载配置
 	cfg, err := config.LoadConfig()
@@ -89,6 +99,9 @@ func main() {
 	// 分类和标签文章路由
 	apiRouter.HandleFunc("/articles/category", api.GetArticlesByCategoryHandler).Methods("GET")
 	apiRouter.HandleFunc("/articles/tag", api.GetArticlesByTagHandler).Methods("GET")
+
+	// Swagger 文档路由
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	// 应用自定义CORS中间件
 	handler := enableCORS(r)
