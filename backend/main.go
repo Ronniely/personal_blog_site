@@ -1,4 +1,4 @@
-// @title 博客系统 API
+// @title 博客系统 API接口文档
 // @version 1.0
 // @description 这是一个博客系统的 API 文档
 // @host localhost:8083

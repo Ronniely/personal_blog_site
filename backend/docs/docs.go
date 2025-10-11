@@ -796,7 +796,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8083",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "博客系统 API",
+	Title:            "博客系统 API接口文档",
 	Description:      "这是一个博客系统的 API 文档",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

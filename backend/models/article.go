@@ -51,7 +51,7 @@ func CreateArticle(article *Article) error {
 
 	// 插入文章基本信息
 	_, err = tx.Exec(
-		"INSERT INTO 文章表 (id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO article (id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		article.ID, article.Title, article.Content, article.Excerpt, article.CoverImage, article.CategoryID, article.CreatedAt, article.UpdatedAt, article.Views, article.Likes, article.AuthorID, article.Published,
 	)
 	if err != nil {
@@ -61,14 +61,14 @@ func CreateArticle(article *Article) error {
 	// 如果有标签，创建文章与标签的关联
 	if len(article.Tags) > 0 {
 		for _, tag := range article.Tags {
-			_, err = tx.Exec("INSERT INTO 文章标签关联表 (article_id, tag_id) VALUES (?, ?)", article.ID, tag.ID)
+			_, err = tx.Exec("INSERT INTO relevance (article_id, tag_id) VALUES (?, ?)", article.ID, tag.ID)
 			if err != nil {
 				return fmt.Errorf("创建文章标签关联失败: %w", err)
 			}
 
 			// 更新标签计数
 			tag.Count++
-			_, err = tx.Exec("UPDATE 标签表 SET count = ? WHERE id = ?", tag.Count, tag.ID)
+			_, err = tx.Exec("UPDATE label SET count = ? WHERE id = ?", tag.Count, tag.ID)
 			if err != nil {
 				return fmt.Errorf("更新标签计数失败: %w", err)
 			}
@@ -82,7 +82,7 @@ func CreateArticle(article *Article) error {
 	}
 	if category != nil {
 		category.Count++
-		_, err = tx.Exec("UPDATE 分类表 SET count = ? WHERE id = ?", category.Count, category.ID)
+		_, err = tx.Exec("UPDATE classify SET count = ? WHERE id = ?", category.Count, category.ID)
 		if err != nil {
 			return fmt.Errorf("更新分类计数失败: %w", err)
 		}
@@ -101,7 +101,7 @@ func GetArticleByID(id string) (*Article, error) {
 
 	// 查询文章基本信息
 	err := db.DB.QueryRow(
-		"SELECT id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published FROM 文章表 WHERE id = ?",
+		"SELECT id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published FROM article WHERE id = ?",
 		id,
 	).Scan(
 		&article.ID, &article.Title, &article.Content, &article.Excerpt, &article.CoverImage, &article.CategoryID, &article.CreatedAt, &article.UpdatedAt, &article.Views, &article.Likes, &article.AuthorID, &article.Published,
@@ -147,7 +147,7 @@ func UpdateArticle(article *Article) error {
 
 	// 更新文章基本信息
 	_, err = tx.Exec(
-		"UPDATE 文章表 SET title = ?, content = ?, excerpt = ?, cover_image = ?, category_id = ?, updated_at = ?, views = ?, likes = ?, author_id = ?, published = ? WHERE id = ?",
+		"UPDATE article SET title = ?, content = ?, excerpt = ?, cover_image = ?, category_id = ?, updated_at = ?, views = ?, likes = ?, author_id = ?, published = ? WHERE id = ?",
 		article.Title, article.Content, article.Excerpt, article.CoverImage, article.CategoryID, article.UpdatedAt, article.Views, article.Likes, article.AuthorID, article.Published, article.ID,
 	)
 	if err != nil {
@@ -157,27 +157,27 @@ func UpdateArticle(article *Article) error {
 	// 如果分类变更，更新分类计数
 	if oldArticle.CategoryID != article.CategoryID {
 		// 减少旧分类计数
-		_, err = tx.Exec("UPDATE 分类表 SET count = count - 1 WHERE id = ?", oldArticle.CategoryID)
+		_, err = tx.Exec("UPDATE classify SET count = count - 1 WHERE id = ?", oldArticle.CategoryID)
 		if err != nil {
 			return fmt.Errorf("更新旧分类计数失败: %w", err)
 		}
 
 		// 增加新分类计数
-		_, err = tx.Exec("UPDATE 分类表 SET count = count + 1 WHERE id = ?", article.CategoryID)
+		_, err = tx.Exec("UPDATE classify SET count = count + 1 WHERE id = ?", article.CategoryID)
 		if err != nil {
 			return fmt.Errorf("更新新分类计数失败: %w", err)
 		}
 	}
 
 	// 删除旧标签关联
-	_, err = tx.Exec("DELETE FROM 文章标签关联表 WHERE article_id = ?", article.ID)
+	_, err = tx.Exec("DELETE FROM relevance WHERE article_id = ?", article.ID)
 	if err != nil {
 		return fmt.Errorf("删除旧标签关联失败: %w", err)
 	}
 
 	// 减少旧标签计数
 	for _, oldTag := range oldArticle.Tags {
-		_, err = tx.Exec("UPDATE 标签表 SET count = count - 1 WHERE id = ?", oldTag.ID)
+		_, err = tx.Exec("UPDATE label SET count = count - 1 WHERE id = ?", oldTag.ID)
 		if err != nil {
 			return fmt.Errorf("更新旧标签计数失败: %w", err)
 		}
@@ -185,13 +185,13 @@ func UpdateArticle(article *Article) error {
 
 	// 处理新标签关联
 	for _, newTag := range article.Tags {
-		_, err = tx.Exec("INSERT INTO 文章标签关联表 (article_id, tag_id) VALUES (?, ?)", article.ID, newTag.ID)
+		_, err = tx.Exec("INSERT INTO relevance (article_id, tag_id) VALUES (?, ?)", article.ID, newTag.ID)
 		if err != nil {
 			return fmt.Errorf("添加新标签关联失败: %w", err)
 		}
 
 		// 增加新标签计数
-		_, err = tx.Exec("UPDATE 标签表 SET count = count + 1 WHERE id = ?", newTag.ID)
+		_, err = tx.Exec("UPDATE label SET count = count + 1 WHERE id = ?", newTag.ID)
 		if err != nil {
 			return fmt.Errorf("更新新标签计数失败: %w", err)
 		}
@@ -215,26 +215,26 @@ func DeleteArticle(id string) error {
 	}
 
 	// 删除文章
-	_, err = tx.Exec("DELETE FROM 文章表 WHERE id = ?", id)
+	_, err = tx.Exec("DELETE FROM article WHERE id = ?", id)
 	if err != nil {
 		return fmt.Errorf("删除文章失败: %w", err)
 	}
 
 	// 删除标签关联
-	_, err = tx.Exec("DELETE FROM 文章标签关联表 WHERE article_id = ?", id)
+	_, err = tx.Exec("DELETE FROM relevance WHERE article_id = ?", id)
 	if err != nil {
 		return fmt.Errorf("删除标签关联失败: %w", err)
 	}
 
 	// 更新分类计数
-	_, err = tx.Exec("UPDATE 分类表 SET count = count - 1 WHERE id = ?", article.CategoryID)
+	_, err = tx.Exec("UPDATE classify SET count = count - 1 WHERE id = ?", article.CategoryID)
 	if err != nil {
 		return fmt.Errorf("更新分类计数失败: %w", err)
 	}
 
 	// 更新标签计数
 	for _, tag := range article.Tags {
-		_, err = tx.Exec("UPDATE 标签表 SET count = count - 1 WHERE id = ?", tag.ID)
+		_, err = tx.Exec("UPDATE label SET count = count - 1 WHERE id = ?", tag.ID)
 		if err != nil {
 			return fmt.Errorf("更新标签计数失败: %w", err)
 		}
@@ -246,7 +246,7 @@ func DeleteArticle(id string) error {
 // GetArticles 获取文章列表
 func GetArticles(limit, offset int) ([]*Article, error) {
 	rows, err := db.DB.Query(
-		"SELECT id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published FROM 文章表 WHERE published = true ORDER BY created_at DESC LIMIT ? OFFSET ?",
+		"SELECT id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published FROM article WHERE published = true ORDER BY created_at DESC LIMIT ? OFFSET ?",
 		limit, offset,
 	)
 	if err != nil {
@@ -291,7 +291,7 @@ func GetArticles(limit, offset int) ([]*Article, error) {
 // GetArticlesByCategoryID 根据分类ID获取文章
 func GetArticlesByCategoryID(categoryID string, limit, offset int) ([]*Article, error) {
 	rows, err := db.DB.Query(
-		"SELECT id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published FROM 文章表 WHERE category_id = ? AND published = true ORDER BY created_at DESC LIMIT ? OFFSET ?",
+		"SELECT id, title, content, excerpt, cover_image, category_id, created_at, updated_at, views, likes, author_id, published FROM article WHERE category_id = ? AND published = true ORDER BY created_at DESC LIMIT ? OFFSET ?",
 		categoryID, limit, offset,
 	)
 	if err != nil {
@@ -336,7 +336,7 @@ func GetArticlesByCategoryID(categoryID string, limit, offset int) ([]*Article, 
 // GetArticlesByTagID 根据标签ID获取文章
 func GetArticlesByTagID(tagID string, limit, offset int) ([]*Article, error) {
 	rows, err := db.DB.Query(
-		"SELECT a.id, a.title, a.content, a.excerpt, a.cover_image, a.category_id, a.created_at, a.updated_at, a.views, a.likes, a.author_id, a.published FROM 文章表 a JOIN 文章标签关联表 at ON a.id = at.article_id WHERE at.tag_id = ? AND a.published = true ORDER BY a.created_at DESC LIMIT ? OFFSET ?",
+		"SELECT a.id, a.title, a.content, a.excerpt, a.cover_image, a.category_id, a.created_at, a.updated_at, a.views, a.likes, a.author_id, a.published FROM article a JOIN relevance at ON a.id = at.article_id WHERE at.tag_id = ? AND a.published = true ORDER BY a.created_at DESC LIMIT ? OFFSET ?",
 		tagID, limit, offset,
 	)
 	if err != nil {

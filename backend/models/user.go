@@ -33,7 +33,7 @@ func CreateUser(username, password, email string) (*User, error) {
 
 	// 插入用户数据
 	result, err := db.DB.Exec(
-		"INSERT INTO 用户表 (username, password, email, created_time) VALUES (?, ?, ?, NOW())",
+		"INSERT INTO user (username, password, email, created_time) VALUES (?, ?, ?, NOW())",
 		username, string(hashedPassword), email,
 	)
 	if err != nil {
@@ -58,7 +58,7 @@ func CreateUser(username, password, email string) (*User, error) {
 // GetUserByUsername 根据用户名查找用户
 func GetUserByUsername(username string) (*User, error) {
 	var user User
-	row := db.DB.QueryRow("SELECT id, username, password, email, created_time FROM 用户表 WHERE username = ?", username)
+	row := db.DB.QueryRow("SELECT id, username, password, email, created_time FROM user WHERE username = ?", username)
 	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.CreatedTime)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -72,7 +72,7 @@ func GetUserByUsername(username string) (*User, error) {
 // GetUserByEmail 根据邮箱查找用户
 func GetUserByEmail(email string) (*User, error) {
 	var user User
-	row := db.DB.QueryRow("SELECT id, username, password, email, created_time FROM 用户表 WHERE email = ?", email)
+	row := db.DB.QueryRow("SELECT id, username, password, email, created_time FROM user WHERE email = ?", email)
 	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.CreatedTime)
 	if err != nil {
 		if err == sql.ErrNoRows {

@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "这是一个博客系统的 API 文档",
-        "title": "博客系统 API",
+        "title": "博客系统 API接口文档",
         "contact": {},
         "version": "1.0"
     },
