@@ -68,7 +68,7 @@ func CreateArticle(article *Article) error {
 
 			// 更新标签计数
 			tag.Count++
-			_, err = tx.Exec("UPDATE label SET count = ? WHERE id = ?", tag.Count, tag.ID)
+			_, err = tx.Exec("UPDATE tag SET count = ? WHERE id = ?", tag.Count, tag.ID)
 			if err != nil {
 				return fmt.Errorf("更新标签计数失败: %w", err)
 			}
@@ -82,7 +82,7 @@ func CreateArticle(article *Article) error {
 	}
 	if category != nil {
 		category.Count++
-		_, err = tx.Exec("UPDATE classify SET count = ? WHERE id = ?", category.Count, category.ID)
+		_, err = tx.Exec("UPDATE category SET count = ? WHERE id = ?", category.Count, category.ID)
 		if err != nil {
 			return fmt.Errorf("更新分类计数失败: %w", err)
 		}
@@ -157,13 +157,13 @@ func UpdateArticle(article *Article) error {
 	// 如果分类变更，更新分类计数
 	if oldArticle.CategoryID != article.CategoryID {
 		// 减少旧分类计数
-		_, err = tx.Exec("UPDATE classify SET count = count - 1 WHERE id = ?", oldArticle.CategoryID)
+		_, err = tx.Exec("UPDATE category SET count = count - 1 WHERE id = ?", oldArticle.CategoryID)
 		if err != nil {
 			return fmt.Errorf("更新旧分类计数失败: %w", err)
 		}
 
 		// 增加新分类计数
-		_, err = tx.Exec("UPDATE classify SET count = count + 1 WHERE id = ?", article.CategoryID)
+		_, err = tx.Exec("UPDATE category SET count = count + 1 WHERE id = ?", article.CategoryID)
 		if err != nil {
 			return fmt.Errorf("更新新分类计数失败: %w", err)
 		}
@@ -177,7 +177,7 @@ func UpdateArticle(article *Article) error {
 
 	// 减少旧标签计数
 	for _, oldTag := range oldArticle.Tags {
-		_, err = tx.Exec("UPDATE label SET count = count - 1 WHERE id = ?", oldTag.ID)
+		_, err = tx.Exec("UPDATE tag SET count = count - 1 WHERE id = ?", oldTag.ID)
 		if err != nil {
 			return fmt.Errorf("更新旧标签计数失败: %w", err)
 		}
@@ -191,7 +191,7 @@ func UpdateArticle(article *Article) error {
 		}
 
 		// 增加新标签计数
-		_, err = tx.Exec("UPDATE label SET count = count + 1 WHERE id = ?", newTag.ID)
+		_, err = tx.Exec("UPDATE tag SET count = count + 1 WHERE id = ?", newTag.ID)
 		if err != nil {
 			return fmt.Errorf("更新新标签计数失败: %w", err)
 		}
@@ -227,14 +227,14 @@ func DeleteArticle(id string) error {
 	}
 
 	// 更新分类计数
-	_, err = tx.Exec("UPDATE classify SET count = count - 1 WHERE id = ?", article.CategoryID)
+	_, err = tx.Exec("UPDATE category SET count = count - 1 WHERE id = ?", article.CategoryID)
 	if err != nil {
 		return fmt.Errorf("更新分类计数失败: %w", err)
 	}
 
 	// 更新标签计数
 	for _, tag := range article.Tags {
-		_, err = tx.Exec("UPDATE label SET count = count - 1 WHERE id = ?", tag.ID)
+		_, err = tx.Exec("UPDATE tag SET count = count - 1 WHERE id = ?", tag.ID)
 		if err != nil {
 			return fmt.Errorf("更新标签计数失败: %w", err)
 		}

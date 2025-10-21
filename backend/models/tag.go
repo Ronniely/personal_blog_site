@@ -20,7 +20,7 @@ type Tag struct {
 
 // GetTags 获取所有标签
 func GetTags() ([]*Tag, error) {
-	rows, err := db.DB.Query("SELECT id, name, count FROM label ORDER BY count DESC")
+	rows, err := db.DB.Query("SELECT id, name, count FROM tag ORDER BY count DESC")
 	if err != nil {
 		return nil, fmt.Errorf("获取标签列表失败: %w", err)
 	}
@@ -46,7 +46,7 @@ func GetTags() ([]*Tag, error) {
 // GetTagByID 根据ID获取标签
 func GetTagByID(id string) (*Tag, error) {
 	tag := &Tag{}
-	err := db.DB.QueryRow("SELECT id, name, count FROM label WHERE id = ?", id).Scan(&tag.ID, &tag.Name, &tag.Count)
+	err := db.DB.QueryRow("SELECT id, name, count FROM tag WHERE id = ?", id).Scan(&tag.ID, &tag.Name, &tag.Count)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -59,7 +59,7 @@ func GetTagByID(id string) (*Tag, error) {
 // GetTagByName 根据名称获取标签
 func GetTagByName(name string) (*Tag, error) {
 	tag := &Tag{}
-	err := db.DB.QueryRow("SELECT id, name, count FROM label WHERE name = ?", name).Scan(&tag.ID, &tag.Name, &tag.Count)
+	err := db.DB.QueryRow("SELECT id, name, count FROM tag WHERE name = ?", name).Scan(&tag.ID, &tag.Name, &tag.Count)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -72,7 +72,7 @@ func GetTagByName(name string) (*Tag, error) {
 // GetTagsByArticleID 根据文章ID获取所有标签
 func GetTagsByArticleID(articleID string) ([]*Tag, error) {
 	rows, err := db.DB.Query(
-		"SELECT t.id, t.name, t.count FROM label t JOIN relevance at ON t.id = at.tag_id WHERE at.article_id = ?",
+		"SELECT t.id, t.name, t.count FROM tag t JOIN relevance at ON t.id = at.tag_id WHERE at.article_id = ?",
 		articleID,
 	)
 	if err != nil {
@@ -99,7 +99,7 @@ func GetTagsByArticleID(articleID string) ([]*Tag, error) {
 
 // CreateTag 创建新标签
 func CreateTag(tag *Tag) error {
-	_, err := db.DB.Exec("INSERT INTO label (id, name, count) VALUES (?, ?, ?)", tag.ID, tag.Name, tag.Count)
+	_, err := db.DB.Exec("INSERT INTO tag (id, name, count) VALUES (?, ?, ?)", tag.ID, tag.Name, tag.Count)
 	if err != nil {
 		return fmt.Errorf("创建标签失败: %w", err)
 	}
@@ -108,7 +108,7 @@ func CreateTag(tag *Tag) error {
 
 // UpdateTag 更新标签
 func UpdateTag(tag *Tag) error {
-	_, err := db.DB.Exec("UPDATE label SET name = ?, count = ? WHERE id = ?", tag.Name, tag.Count, tag.ID)
+	_, err := db.DB.Exec("UPDATE tag SET name = ?, count = ? WHERE id = ?", tag.Name, tag.Count, tag.ID)
 	if err != nil {
 		return fmt.Errorf("更新标签失败: %w", err)
 	}
@@ -117,7 +117,7 @@ func UpdateTag(tag *Tag) error {
 
 // DeleteTag 删除标签
 func DeleteTag(id string) error {
-	_, err := db.DB.Exec("DELETE FROM label WHERE id = ?", id)
+	_, err := db.DB.Exec("DELETE FROM tag WHERE id = ?", id)
 	if err != nil {
 		return fmt.Errorf("删除标签失败: %w", err)
 	}

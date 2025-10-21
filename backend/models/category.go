@@ -20,7 +20,7 @@ type Category struct {
 
 // GetCategories 获取所有分类
 func GetCategories() ([]*Category, error) {
-	rows, err := db.DB.Query("SELECT id, name, count FROM classify ORDER BY count DESC")
+	rows, err := db.DB.Query("SELECT id, name, count FROM category ORDER BY count DESC")
 	if err != nil {
 		return nil, fmt.Errorf("获取分类列表失败: %w", err)
 	}
@@ -46,7 +46,7 @@ func GetCategories() ([]*Category, error) {
 // GetCategoryByID 根据ID获取分类
 func GetCategoryByID(id string) (*Category, error) {
 	category := &Category{}
-	err := db.DB.QueryRow("SELECT id, name, count FROM classify WHERE id = ?", id).Scan(&category.ID, &category.Name, &category.Count)
+	err := db.DB.QueryRow("SELECT id, name, count FROM category WHERE id = ?", id).Scan(&category.ID, &category.Name, &category.Count)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -59,7 +59,7 @@ func GetCategoryByID(id string) (*Category, error) {
 // GetCategoryByName 根据名称获取分类
 func GetCategoryByName(name string) (*Category, error) {
 	category := &Category{}
-	err := db.DB.QueryRow("SELECT id, name, count FROM classify WHERE name = ?", name).Scan(&category.ID, &category.Name, &category.Count)
+	err := db.DB.QueryRow("SELECT id, name, count FROM category WHERE name = ?", name).Scan(&category.ID, &category.Name, &category.Count)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -71,7 +71,7 @@ func GetCategoryByName(name string) (*Category, error) {
 
 // CreateCategory 创建新分类
 func CreateCategory(category *Category) error {
-	_, err := db.DB.Exec("INSERT INTO classify (id, name, count) VALUES (?, ?, ?)", category.ID, category.Name, category.Count)
+	_, err := db.DB.Exec("INSERT INTO category (id, name, count) VALUES (?, ?, ?)", category.ID, category.Name, category.Count)
 	if err != nil {
 		return fmt.Errorf("创建分类失败: %w", err)
 	}
@@ -80,7 +80,7 @@ func CreateCategory(category *Category) error {
 
 // UpdateCategory 更新分类
 func UpdateCategory(category *Category) error {
-	_, err := db.DB.Exec("UPDATE classify SET name = ?, count = ? WHERE id = ?", category.Name, category.Count, category.ID)
+	_, err := db.DB.Exec("UPDATE category SET name = ?, count = ? WHERE id = ?", category.Name, category.Count, category.ID)
 	if err != nil {
 		return fmt.Errorf("更新分类失败: %w", err)
 	}
@@ -89,7 +89,7 @@ func UpdateCategory(category *Category) error {
 
 // DeleteCategory 删除分类
 func DeleteCategory(id string) error {
-	_, err := db.DB.Exec("DELETE FROM classify WHERE id = ?", id)
+	_, err := db.DB.Exec("DELETE FROM category WHERE id = ?", id)
 	if err != nil {
 		return fmt.Errorf("删除分类失败: %w", err)
 	}
