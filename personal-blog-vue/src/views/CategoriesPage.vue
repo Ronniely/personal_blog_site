@@ -5,22 +5,19 @@
         <h1 class="page-title">文章分类</h1>
         <p class="page-description">浏览所有的文章分类，查看相关主题的内容</p>
       </div>
-      
+
       <div class="categories-container">
         <div class="categories-list">
-          <div 
-            v-for="category in categories"
-            :key="category.id"
-            class="category-card"
-          >
+          <div v-for="category in categories" :key="category.id" class="category-card">
             <router-link :to="`/category/${category.id}`" class="category-link">
               <div class="category-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                 </svg>
               </div>
-              
+
               <div class="category-info">
                 <h3 class="category-name">{{ category.name }}</h3>
                 <p class="category-count">{{ category.count }} 篇文章</p>
@@ -38,7 +35,7 @@
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Category } from '../types';
-import Layout from '../components/Layout.vue';
+import Layout from './Home/Layout.vue';
 import { categoryAPI } from '../services/apiService';
 
 // 分类数据
@@ -52,7 +49,7 @@ const getCategoryDescription = (categoryId: string) => {
     '3': '数据库相关的技术文章，包括MySQL、MongoDB等数据库的使用和优化技巧。',
     '4': '开发工具和效率提升相关的文章，包括编辑器、终端、版本控制等工具的使用技巧。'
   };
-  
+
   return descriptions[categoryId] || '该分类下的文章集合';
 };
 
@@ -61,7 +58,7 @@ const fetchCategories = async () => {
   try {
     // 从API获取分类数据
     const response = await categoryAPI.getCategories();
-    
+
     if (response.code === 200 && response.data) {
       // 按文章数量排序（降序）
       const sortedCategories = response.data.sort((a: Category, b: Category) => (b.count || 0) - (a.count || 0));
@@ -210,21 +207,21 @@ onMounted(() => {
   .page-title {
     font-size: 28px;
   }
-  
+
   .page-description {
     font-size: 16px;
   }
-  
+
   .category-icon {
     width: 60px;
     height: 60px;
   }
-  
+
   .category-icon svg {
     width: 36px;
     height: 36px;
   }
-  
+
   .category-name {
     font-size: 18px;
   }

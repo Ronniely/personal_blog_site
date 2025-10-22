@@ -5,31 +5,22 @@
         <h1 class="page-title">热门标签</h1>
         <p class="page-description">浏览所有的文章标签，发现感兴趣的内容</p>
       </div>
-      
+
       <div class="tags-container">
         <!-- 标签云 -->
         <div class="tags-cloud">
-          <router-link 
-            v-for="tag in tags"
-            :key="tag.id"
-            :to="`/tag/${tag.id}`"
-            class="tag-item"
-            :style="getTagStyle(tag)"
-          >
+          <router-link v-for="tag in tags" :key="tag.id" :to="`/tag/${tag.id}`" class="tag-item"
+            :style="getTagStyle(tag)">
             <span class="tag-name">{{ tag.name }}</span>
             <span class="tag-count">({{ tag.count }})</span>
           </router-link>
         </div>
-        
+
         <!-- 标签列表 -->
         <div class="tags-list">
           <h2 class="section-title">所有标签</h2>
           <div class="tags-grid">
-            <div 
-              v-for="tag in sortedTags"
-              :key="tag.id"
-              class="tag-card"
-            >
+            <div v-for="tag in sortedTags" :key="tag.id" class="tag-card">
               <router-link :to="`/tag/${tag.id}`" class="tag-link">
                 <div class="tag-card-content">
                   <div class="tag-card-header">
@@ -53,7 +44,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import type { Tag } from '../types';
-import Layout from '../components/Layout.vue';
+import Layout from './Home/Layout.vue';
 import { tagAPI } from '../services/apiService';
 
 // 标签数据
@@ -75,16 +66,16 @@ const getTagStyle = (tag: Tag) => {
   const baseSize = 14;
   const maxSize = 24;
   const sizeRange = maxSize - baseSize;
-  
+
   const maxCount = Math.max(...tags.value.map(t => t.count || 0), 1);
   const sizeFactor = Math.min((tag.count || 0) / maxCount, 1);
   const fontSize = baseSize + (sizeFactor * sizeRange);
-  
+
   // 基于文章数量计算颜色强度
   const hue = 210; // 蓝色色调
   const saturation = 70 + (sizeFactor * 20); // 70% 到 90%
   const lightness = 45 + ((1 - sizeFactor) * 10); // 45% 到 55%
-  
+
   return {
     fontSize: `${fontSize}px`,
     backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
@@ -97,7 +88,7 @@ const fetchTags = async () => {
   try {
     // 从API获取标签数据
     const response = await tagAPI.getTags();
-    
+
     if (response.code === 200 && response.data) {
       // 只保留有文章的标签
       const tagsWithArticles = response.data.filter((tag: Tag) => (tag.count || 0) > 0);
@@ -267,25 +258,25 @@ onMounted(() => {
   .page-title {
     font-size: 28px;
   }
-  
+
   .page-description {
     font-size: 16px;
   }
-  
+
   .tags-cloud {
     padding: 20px;
     gap: 10px;
   }
-  
+
   .tags-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
   }
-  
+
   .tag-card {
     padding: 15px;
   }
-  
+
   .tag-card-name {
     font-size: 16px;
   }

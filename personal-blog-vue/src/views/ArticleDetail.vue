@@ -5,81 +5,71 @@
         <div class="loading-spinner"></div>
         <p>加载中...</p>
       </div>
-      
+
       <div v-else-if="error" class="error-container">
         <p>{{ error }}</p>
         <router-link to="/" class="back-button">返回首页</router-link>
       </div>
-      
+
       <div v-else-if="article" class="article-container">
         <!-- 文章头部 -->
         <div class="article-header">
           <h1 class="article-title">{{ article.title }}</h1>
-          
+
           <div class="article-meta">
             <div class="author-info">
-              <img 
-                :src="article.author?.avatar || '/src/assets/default-avatar.png'"
-                :alt="article.author?.name"
-                class="author-avatar"
-              />
+              <img :src="article.author?.avatar || '/src/assets/default-avatar.png'" :alt="article.author?.name"
+                class="author-avatar" />
               <div class="author-details">
                 <span class="author-name">{{ article.author?.name || '作者' }}</span>
                 <span class="publish-date">{{ formatDate(article.createdAt) }}</span>
               </div>
             </div>
-            
+
             <div class="article-stats">
               <span class="stat-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                  </path>
                 </svg>
                 {{ article.views || 0 }} 阅读
               </span>
               <span class="stat-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                  </path>
                 </svg>
                 {{ comments.length }} 评论
               </span>
             </div>
           </div>
-          
+
           <div class="article-categories-tags">
             <div class="categories">
               <span class="category-label">分类：</span>
-              <router-link 
-                v-if="article.category"
-                :to="`/category/${article.category.id}`"
-                class="category-link"
-              >
+              <router-link v-if="article.category" :to="`/category/${article.category.id}`" class="category-link">
                 {{ article.category.name }}
               </router-link>
             </div>
-            
+
             <div class="tags">
               <span class="tags-label">标签：</span>
-              <router-link 
-                v-for="tag in article.tags" 
-                :key="tag.id"
-                :to="`/tag/${tag.id}`"
-                class="tag-link"
-              >
+              <router-link v-for="tag in article.tags" :key="tag.id" :to="`/tag/${tag.id}`" class="tag-link">
                 {{ tag.name }}
               </router-link>
             </div>
           </div>
         </div>
-        
+
         <!-- 文章封面 -->
         <div v-if="article.coverImage" class="article-cover">
-          <img 
-            :src="article.coverImage"
-            :alt="article.title"
-            class="cover-image"
-          />
+          <img :src="article.coverImage" :alt="article.title" class="cover-image" />
         </div>
-        
+
         <!-- 文章内容 -->
         <div class="article-content">
           <div class="content-wrapper">
@@ -88,27 +78,32 @@
             <div v-html="renderedContent"></div>
           </div>
         </div>
-        
+
         <!-- 文章操作 -->
         <div class="article-actions">
           <button class="action-button like-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+              </path>
             </svg>
             点赞 ({{ article.likes || 0 }})
           </button>
-          
+
           <button class="action-button share-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
               <polyline points="16 6 12 2 8 6"></polyline>
               <line x1="12" y1="2" x2="12" y2="15"></line>
             </svg>
             分享
           </button>
-          
+
           <button class="action-button save-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
@@ -116,39 +111,24 @@
             收藏
           </button>
         </div>
-        
+
         <!-- 评论区 -->
         <div class="comments-section">
           <h3 class="comments-title">评论 ({{ comments.length }})</h3>
-          
+
           <!-- 评论表单 -->
           <div class="comment-form">
-            <textarea 
-              v-model="commentText"
-              placeholder="写下你的评论..."
-              class="comment-input"
-            ></textarea>
-            <button 
-              class="submit-comment-button"
-              @click="submitComment"
-              :disabled="!commentText.trim()"
-            >
+            <textarea v-model="commentText" placeholder="写下你的评论..." class="comment-input"></textarea>
+            <button class="submit-comment-button" @click="submitComment" :disabled="!commentText.trim()">
               提交评论
             </button>
           </div>
-          
+
           <!-- 评论列表 -->
           <div class="comments-list">
-            <div 
-              v-for="comment in comments"
-              :key="comment.id"
-              class="comment-item"
-            >
-              <img 
-                :src="comment.author.avatar || '/src/assets/default-avatar.png'"
-                :alt="comment.author.name"
-                class="comment-author-avatar"
-              />
+            <div v-for="comment in comments" :key="comment.id" class="comment-item">
+              <img :src="comment.author.avatar || '/src/assets/default-avatar.png'" :alt="comment.author.name"
+                class="comment-author-avatar" />
               <div class="comment-content">
                 <div class="comment-header">
                   <span class="comment-author-name">{{ comment.author.name }}</span>
@@ -157,8 +137,11 @@
                 <p class="comment-text">{{ comment.content }}</p>
                 <div class="comment-actions">
                   <button class="comment-action">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path
+                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                      </path>
                     </svg>
                     {{ comment.likes || 0 }}
                   </button>
@@ -178,7 +161,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import type { BlogPost, Comment as CommentType } from '../types';
 import dayjs from 'dayjs';
-import Layout from '../components/Layout.vue';
+import Layout from './Home/Layout.vue';
 import { articleAPI } from '../services/apiService';
 
 const route = useRoute();
@@ -201,13 +184,13 @@ const renderedContent = computed(() => {
   if (!article.value) return '';
   // 这里简单地将markdown转换为HTML（实际项目应使用专业库）
   let content = article.value.content;
-  
+
   // 简单的markdown解析
   content = content.replace(/^# (.+)$/gm, '<h1>$1</h1>');
   content = content.replace(/^## (.+)$/gm, '<h2>$1</h2>');
   content = content.replace(/^### (.+)$/gm, '<h3>$1</h3>');
   content = content.replace(/\n\n([^\n]+)\n\n/gm, '<p>$1</p>');
-  
+
   return content;
 });
 
@@ -215,7 +198,7 @@ const renderedContent = computed(() => {
 const fetchArticleDetail = async () => {
   loading.value = true;
   error.value = '';
-  
+
   try {
     // 从API获取文章数据
     const response = await articleAPI.getArticleDetail(articleId);
@@ -299,11 +282,11 @@ const submitComment = async () => {
   if (!commentText.value.trim()) {
     return;
   }
-  
+
   try {
     // 从API提交评论
     const response = await articleAPI.createComment(articleId, commentText.value.trim());
-    
+
     if (response.code === 200 && response.data) {
       // 添加新评论到列表
       const newComment: CommentType = {
@@ -320,7 +303,7 @@ const submitComment = async () => {
         replies: []
       };
       comments.value.push(newComment);
-      
+
       // 清空评论输入框
       commentText.value = '';
     } else {
@@ -363,8 +346,13 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-container p {
@@ -511,7 +499,9 @@ onMounted(() => {
   font-size: 16px;
 }
 
-.content-wrapper h1, .content-wrapper h2, .content-wrapper h3 {
+.content-wrapper h1,
+.content-wrapper h2,
+.content-wrapper h3 {
   margin: 30px 0 20px 0;
   color: #333;
 }
@@ -677,16 +667,16 @@ onMounted(() => {
   .article-title {
     font-size: 24px;
   }
-  
+
   .article-meta {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .article-actions {
     flex-wrap: wrap;
   }
-  
+
   .comment-item {
     flex-direction: column;
     gap: 10px;

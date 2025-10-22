@@ -1,22 +1,30 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { createApp } from "vue";
+import App from "./App.vue";
+import { setupDirectives } from "./directives";
+import { setupAssets, setupLazy, setupMasonry, setupMdPreview, setupViewer } from "./plugins";
+import { setupRouter } from "./router";
+import { setupStore } from "./store";
 
-const app = createApp(App)
+async function setupApp() {
+  setupAssets();
 
-// 注册Element Plus
-app.use(ElementPlus)
+  const app = createApp(App);
 
-// 注册Element Plus图标
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
+  setupStore(app);
+
+  setupDirectives(app);
+
+  setupLazy(app);
+
+  setupMdPreview(app);
+
+  setupMasonry(app);
+
+  setupViewer(app);
+
+  await setupRouter(app);
+
+  app.mount("#app");
 }
 
-// 注册路由
-app.use(router)
-
-// 挂载应用
-app.mount('#app')
+setupApp();

@@ -1,88 +1,86 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router';
-</script>
-
 <template>
-  <div id="app">
-    <RouterView />
-  </div>
+  <Provider>
+    <div class="app-wrapper">
+      <Header></Header>
+      <main class="main-wrapper">
+        <router-view v-slot="{ Component, route }">
+          <keep-alive>
+            <component :is="Component" :key="route.path" />
+          </keep-alive>
+        </router-view>
+      </main>
+      <Footer></Footer>
+      <Tool></Tool>
+      <Search v-if="appStore.searchFlag"></Search>
+      <Login v-if="appStore.loginFlag"></Login>
+      <Register v-if="appStore.registerFlag"></Register>
+      <Forget v-if="appStore.forgetFlag"></Forget>
+      <EmailBind v-if="appStore.emailBindFlag"></EmailBind>
+      <PhoneBind v-if="appStore.phoneBindFlag"></PhoneBind>
+      <ThirdBind v-if="appStore.thirdBindFlag"></ThirdBind>
+      <!--      <MusicPlayer></MusicPlayer>-->
+      <!-- 音乐播放器 -->
+      <Player v-if="blogStore.blogInfo.website_config.website_feature?.is_music_player === 1" />
+      <!-- 聊天室 -->
+      <ChatRoom v-if="blogStore.blogInfo.website_config.website_feature?.is_chat_room === 1"></ChatRoom>
+    </div>
+  </Provider>
 </template>
 
-<style>
-/* 全局样式重置和基础样式 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+<script setup lang="ts">
+import Header from "@/components/Layout/Header/index.vue";
+import Footer from "@/components/Layout/Footer/index.vue";
+import Search from "@/components/Dialog/Search.vue";
+import Login from "@/components/Dialog/Login.vue";
+import Register from "@/components/Dialog/Register.vue";
+import Forget from "@/components/Dialog/Forget.vue";
+import EmailBind from "@/components/Dialog/EmailBind.vue";
+import ThirdBind from "@/components/Dialog/ThirdBind.vue";
+import PhoneBind from "@/components/Dialog/PhoneBind.vue";
+import Tool from "@/components/Tool/index.vue";
+import ChatRoom from "@/components/ChatRoom/index.vue";
+import Player from "./components/zw-player/player.vue";
+import { computed, onBeforeMount, onMounted } from "vue";
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
-  color: #333;
-  line-height: 1.6;
-}
+import { useAppStore, useBlogStore, useUserStore } from "@/store";
 
-#app {
+const appStore = useAppStore();
+const blogStore = useBlogStore();
+const userStore = useUserStore();
+
+const isMobile = computed(() => {
+  const flag = navigator.userAgent.match(
+    /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+  );
+  return flag;
+});
+
+onBeforeMount(async () => {
+  // blogStore.report();
+  await blogStore.getBlogInfo();
+});
+
+onMounted(() => {
+  console.log(
+    "%c Hello World %c By 与梦 %c",
+    "background:#e9546b ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff; padding:5px 0;",
+    "background:#ec8c69 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #000; padding:5px 0;",
+    "background:transparent"
+  );
+});
+</script>
+
+<style scoped>
+.app-wrapper {
+  position: relative;
   min-height: 100vh;
 }
 
-/* 容器样式 */
-.container {
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* 链接样式 */
-a {
-  color: #4a6fa5;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-a:hover {
-  color: #3a5a8c;
-}
-
-/* 按钮基础样式 */
-button {
-  font-family: inherit;
-  font-size: inherit;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-/* 输入框基础样式 */
-input,
-textarea,
-select {
-  font-family: inherit;
-  font-size: inherit;
-  outline: none;
-}
-
-/* 滚动条样式 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  padding: 0 0 8rem;
 }
 </style>
