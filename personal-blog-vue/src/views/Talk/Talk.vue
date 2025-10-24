@@ -20,22 +20,11 @@
           </div>
           <div class="talk-content" v-html="talk.content"></div>
           <div v-if="talk.img_list" v-viewer class="talk-image">
-            <img
-              v-for="(img, index) in talk.img_list"
-              :key="index"
-              v-lazy="img"
-              class="image"
-              @click.prevent
-            />
+            <img v-for="(img, index) in talk.img_list" :key="index" v-lazy="img" class="image" @click.prevent />
           </div>
           <div class="info" style="margin-top: 0.5rem">
             <span class="talk-like info" @click="like">
-              <svg-icon
-                icon-class="like"
-                size="0.8rem"
-                :class="isLike(talk.id)"
-                style="margin-right: 5px"
-              ></svg-icon>
+              <svg-icon icon-class="like" size="0.8rem" :class="isLike(talk.id)" style="margin-right: 5px"></svg-icon>
               {{ talk.like_count }}
             </span>
             <span class="talk-comment info">
@@ -51,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, reactive, toRefs } from "vue";
 import { TalkAPI } from "@/api/talk";
 import type { Talk } from "@/api/types";
 import { useAppStore, useBlogStore, useUserStore } from "@/store";

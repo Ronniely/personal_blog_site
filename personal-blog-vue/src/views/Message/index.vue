@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { RemarkAPI } from "@/api/remark";
 import type { Remark as Message, RemarkNewReq } from "@/api/types";
 import { useBlogStore, useUserStore } from "@/store";

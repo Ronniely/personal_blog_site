@@ -57,7 +57,12 @@ const isMobile = computed(() => {
 
 onBeforeMount(async () => {
   // blogStore.report();
-  await blogStore.getBlogInfo();
+  try {
+    await blogStore.getBlogInfo();
+  } catch (error) {
+    console.error("获取博客信息失败:", error);
+    // 可以在这里添加错误处理逻辑，比如显示错误提示
+  }
 });
 
 onMounted(() => {

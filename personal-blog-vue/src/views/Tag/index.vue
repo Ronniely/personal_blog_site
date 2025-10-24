@@ -8,13 +8,8 @@
   <div class="bg">
     <div class="page-container">
       <div class="tag-cloud">
-        <router-link
-          v-for="tag in tagList"
-          :key="tag.id"
-          :to="`/tag/${tag.tag_name}`"
-          class="tag-item"
-          :style="{ 'font-size': getSize(tag.article_count), color: getRandomColor() }"
-        >
+        <router-link v-for="tag in tagList" :key="tag.id" :to="`/tag/${tag.tag_name}`" class="tag-item"
+          :style="{ 'font-size': getSize(tag.article_count), color: getRandomColor() }">
           {{ tag.tag_name }}
           <sup>{{ tag.article_count }}</sup>
         </router-link>
@@ -24,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { TagAPI } from "@/api/tag";
 import type { Tag } from "@/api/types";
 import { useBlogStore } from "@/store";

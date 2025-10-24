@@ -57,31 +57,71 @@ requests.interceptors.response.use(
       return response;
     }
 
-    const { code, data, message: msg } = response.data;
+    // 检查响应数据格式
+    if (!response.data || typeof response.data !== 'object') {
+      const errorMsg = "服务器响应格式错误";
+      if (window.$message) {
+        window.$message.error(errorMsg);
+      } else {
+        console.error(errorMsg);
+      }
+      return Promise.reject(new Error(errorMsg));
+    }
+    
+    // 尝试从响应中提取code, data和message
+    const code = response.data.code;
+    const data = response.data.data;
+    // 支持msg或message字段
+    const msg = response.data.msg || response.data.message || "未知错误";
+    
+    // 如果没有code字段，可能是直接返回了数据
+    if (code === undefined) {
+      return response.data;
+    }
 
     // 接口错误码
     switch (code) {
       case 200:
-        break;
+        return response.data;
       case 401:
-        window.$message?.error("用户未登录");
-        return Promise.reject(msg);
+        if (window.$message) {
+          window.$message.error("用户未登录");
+        } else {
+          console.error("用户未登录");
+        }
+        return Promise.reject(new Error(msg || "用户未登录"));
       case 402:
         const userStore = useUserStore();
         userStore.forceLogOut();
-        window.$message?.error(msg);
-        return Promise.reject(msg);
+        if (window.$message) {
+          window.$message.error(msg);
+        } else {
+          console.error(msg);
+        }
+        return Promise.reject(new Error(msg || "凭证失效"));
       case 403:
-        window.$message?.error(msg);
-        return Promise.reject(msg);
+        if (window.$message) {
+          window.$message.error(msg);
+        } else {
+          console.error(msg);
+        }
+        return Promise.reject(new Error(msg || "权限不足"));
       case 500:
-        window.$message?.error(msg);
-        return Promise.reject(msg);
+        if (window.$message) {
+          window.$message.error(msg);
+        } else {
+          console.error(msg);
+        }
+        return Promise.reject(new Error(msg || "服务器内部错误"));
       default:
-        window.$message?.error(msg || "系统出错");
-        return Promise.reject(new Error(msg || "Error"));
+        const errorMsg = msg || `系统错误: ${code}`;
+        if (window.$message) {
+          window.$message.error(errorMsg);
+        } else {
+          console.error(errorMsg);
+        }
+        return Promise.reject(new Error(errorMsg));
     }
-    return response.data;
   },
   (error: AxiosError) => {
     console.error("request error", error); // for debug
@@ -91,10 +131,17 @@ requests.interceptors.response.use(
     } else if (message.includes("timeout")) {
       message = "系统接口请求超时";
     } else if (message.includes("Request failed with status code")) {
-      message = "系统接口" + message.substring(message.length - 3) + "异常";
+      const statusCode = message.substring(message.length - 3);
+      message = `系统接口${statusCode}异常`;
+    } else if (!message) {
+      message = "未知错误";
     }
-    window.$message?.error(message, { duration: 5000 });
-    return Promise.reject(error);
+    if (window.$message) {
+      window.$message.error(message, { duration: 5000 });
+    } else {
+      console.error(message);
+    }
+    return Promise.reject(new Error(message));
   }
 );
 

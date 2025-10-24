@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { PingReq, PingResp } from "./types";
+import type { IApiResponse } from "@/types/api";
 
 export const BlogApiAPI = {
   /** ping */

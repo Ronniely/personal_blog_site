@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from "vue";
 import { useResizeObserver } from "@vueuse/core";
 import * as echarts from "echarts";
 

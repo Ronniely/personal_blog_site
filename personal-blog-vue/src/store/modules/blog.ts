@@ -50,6 +50,7 @@ export const useBlogStore = defineStore("useBlogStore", () => {
           resolve(res);
         })
         .catch((error) => {
+          console.error("获取博客信息失败:", error);
           reject(error);
         });
     });

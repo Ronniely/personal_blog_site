@@ -17,6 +17,7 @@ import type {
   SendPhoneVerifyCodeReq,
   ThirdLoginReq,
 } from "./types";
+import type { IApiResponse } from "@/types/api";
 
 export const AuthAPI = {
   /** 获取游客身份信息 */
@@ -97,6 +98,18 @@ export const AuthAPI = {
       url: "/blog-api/v1/send_email_verify_code",
       method: "POST",
       data: data,
+    });
+  },
+  
+  /** 发送重置密码邮件 */
+  sendResetPasswordEmail(data?: SendEmailVerifyCodeReq): Promise<IApiResponse<EmptyResp>> {
+    return request({
+      url: "/blog-api/v1/send_email_verify_code",
+      method: "POST",
+      data: {
+        ...data,
+        type: 3 // 假设3表示重置密码类型的验证码
+      },
     });
   },
 

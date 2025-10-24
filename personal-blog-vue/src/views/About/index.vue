@@ -7,10 +7,7 @@
   <div class="bg">
     <div class="page-container">
       <div class="avatar-box">
-        <img
-          class="author-avatar"
-          :src="blogStore.blogInfo.website_config.website_info.website_avatar"
-        />
+        <img class="author-avatar" :src="blogStore.blogInfo.website_config?.website_info?.website_avatar || ''" />
       </div>
       <v-md-preview class="md" :text="aboutContent"></v-md-preview>
     </div>
@@ -18,6 +15,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { useBlogStore } from "@/store";
 import { WebsiteAPI } from "@/api/website";
 

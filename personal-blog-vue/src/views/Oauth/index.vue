@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { useUserStore } from "@/store";
 import { UserAPI } from "@/api/user.ts";
 

@@ -6,13 +6,8 @@
   </div>
   <div class="bg">
     <div class="page-container">
-      <router-link
-        v-for="talk in talkList"
-        :key="talk.id"
-        v-animate="['slideUpBigIn']"
-        :to="`/talk/${talk.id}`"
-        class="talk-item"
-      >
+      <router-link v-for="talk in talkList" :key="talk.id" v-animate="['slideUpBigIn']" :to="`/talk/${talk.id}`"
+        class="talk-item">
         <div class="talk-meta">
           <!-- 用户头像 -->
           <img :src="talk.user?.avatar" class="user-avatar" />
@@ -28,25 +23,17 @@
         <div class="talk-content" v-html="talk.content"></div>
         <!-- 说说图片 -->
         <div v-viewer class="talk-image">
-          <img
-            v-for="(img, index) in talk.img_list"
-            :key="index"
-            v-lazy="img"
-            class="image"
-            @click.prevent
-          />
+          <img v-for="(img, index) in talk.img_list" :key="index" v-lazy="img" class="image" @click.prevent />
         </div>
         <!-- 说说信息 -->
         <div class="info" style="margin-top: 0.5rem">
           <!-- 点赞量 -->
           <span class="talk-like info">
-            <svg-icon icon-class="like" size="0.8rem" style="margin-right: 5px"></svg-icon
-            >{{ talk.like_count }}
+            <svg-icon icon-class="like" size="0.8rem" style="margin-right: 5px"></svg-icon>{{ talk.like_count }}
           </span>
           <!-- 评论量 -->
           <span class="talk-comment info">
-            <svg-icon icon-class="comment" size="0.9rem" style="margin-right: 5px"></svg-icon
-            >{{ talk.comment_count }}
+            <svg-icon icon-class="comment" size="0.9rem" style="margin-right: 5px"></svg-icon>{{ talk.comment_count }}
           </span>
         </div>
       </router-link>
@@ -58,6 +45,7 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, reactive, toRefs } from "vue";
 import { TalkAPI } from "@/api/talk";
 import type { TagQueryReq, Talk } from "@/api/types";
 

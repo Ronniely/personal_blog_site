@@ -20,5 +20,14 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src')
     }
+  },
+  server: {
+    proxy: {
+      '/blog-api': {
+        target: 'http://localhost:8083',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   }
 })

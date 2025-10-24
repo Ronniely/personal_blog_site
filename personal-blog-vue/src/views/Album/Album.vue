@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { AlbumAPI } from "@/api/album";
 import type { Album } from "@/api/types";
 import { useBlogStore } from "@/store";

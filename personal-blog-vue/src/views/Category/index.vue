@@ -10,8 +10,7 @@
       <Echarts :options="categoryOption"></Echarts>
       <ul class="category-list">
         <li v-for="category in categoryList" :key="category.id" class="category-item">
-          <router-link :to="`/category/${category.category_name}`"
-            >{{ category.category_name }}
+          <router-link :to="`/category/${category.category_name}`">{{ category.category_name }}
           </router-link>
           <span class="category-count">({{ category.article_count }})</span>
         </li>
@@ -21,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, reactive, ref } from "vue";
 import { CategoryAPI } from "@/api/category";
 import type { Category } from "@/api/types";
 import Echarts from "@/components/Echarts/index.vue";

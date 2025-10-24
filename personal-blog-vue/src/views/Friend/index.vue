@@ -12,9 +12,9 @@
         本站信息
       </h2>
       <blockquote class="block">
-        <p>名称：{{ blogStore.blogInfo.website_config.website_info.website_name }}</p>
-        <p>简介：{{ blogStore.blogInfo.website_config.website_info.website_intro }}</p>
-        <p>头像：{{ blogStore.blogInfo.website_config.website_info.website_avatar }}</p>
+        <p>名称：{{ blogStore.blogInfo.website_config?.website_info?.website_name || '' }}</p>
+        <p>简介：{{ blogStore.blogInfo.website_config?.website_info?.website_intro || '' }}</p>
+        <p>头像：{{ blogStore.blogInfo.website_config?.website_info?.website_avatar || '' }}</p>
       </blockquote>
       <h2>
         <svg-icon class="flower" icon-class="flower" size="1.25rem" color="pink"></svg-icon>
@@ -29,22 +29,12 @@
         小伙伴们
       </h2>
       <div class="friends">
-        <div
-          v-for="friend in friendList"
-          :key="friend.id"
-          v-animate="['slideUpBigIn']"
-          class="friend-item"
-        >
+        <div v-for="friend in friendList" :key="friend.id" v-animate="['slideUpBigIn']" class="friend-item">
           <a target="_blank" :href="friend.link_address">
             <img v-lazy="friend.link_avatar" class="image" />
           </a>
           <div class="info">
-            <a
-              class="name"
-              target="_blank"
-              :href="friend.link_address"
-              :style="{ color: '0xffffff' }"
-            >
+            <a class="name" target="_blank" :href="friend.link_address" :style="{ color: '0xffffff' }">
               {{ friend.link_name }}
             </a>
             <p class="desc">{{ friend.link_intro }}</p>
@@ -57,6 +47,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { FriendAPI } from "@/api/friend";
 import type { Friend } from "@/api/types";
 import { useBlogStore } from "@/store";
