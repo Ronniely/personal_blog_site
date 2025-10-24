@@ -9,6 +9,27 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/login",
+    component: () => import("@/views/Login/LoginPage.vue"),
+    meta: {
+      title: "登录",
+    },
+  },
+  {
+    path: "/register",
+    component: () => import("@/views/Login/RegisterPage.vue"),
+    meta: {
+      title: "注册",
+    },
+  },
+  {
+    path: "/forget-password",
+    component: () => import("@/views/Login/ForgetPasswordPage.vue"),
+    meta: {
+      title: "找回密码",
+    },
+  },
+  {
     path: "/message",
     component: () => import("@/views/Message/index.vue"),
     meta: {
@@ -119,5 +140,5 @@ export const routes: RouteRecordRaw[] = [
     path: "/oauth/login/:platform",
     component: () => import("@/views/Oauth/index.vue"),
   },
-  // { path: "/:catchAll(.*)", redirect: "/404" },
+  { path: "/:catchAll(.*)", redirect: "/404" },
 ];

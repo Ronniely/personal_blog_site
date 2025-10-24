@@ -38,10 +38,10 @@
           </li>
         </template>
         <li v-if="!userStore.isLogin()" class="item">
-          <a @click="appStore.loginFlag = true">
+          <router-link to="/login">
             <svg-icon icon-class="user"></svg-icon>
             登录
-          </a>
+          </router-link>
         </li>
         <template v-else>
           <li class="item" :class="{ active: route.path === '/user' }">

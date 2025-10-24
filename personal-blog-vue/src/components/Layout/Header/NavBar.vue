@@ -29,10 +29,10 @@
       </div>
     </template>
     <div class="menu-item">
-      <a v-if="!userStore.userInfo.user_id" class="menu-btn" @click="appStore.loginFlag = true">
+      <router-link v-if="!userStore.userInfo.user_id" to="/login" class="menu-btn">
         <svg-icon icon-class="user"></svg-icon>
         登录
-      </a>
+      </router-link>
       <template v-else>
         <img class="user-avatar" :src="userStore.userInfo.avatar" />
         <ul class="submenu">
