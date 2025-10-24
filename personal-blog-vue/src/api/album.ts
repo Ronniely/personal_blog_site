@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { Album, AlbumQueryReq, IdReq, PageResp, PhotoQueryReq } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const AlbumAPI = {
   /** 获取相册列表 */

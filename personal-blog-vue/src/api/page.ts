@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { PageQueryReq, PageResp } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const PageAPI = {
   /** 分页获取页面列表 */

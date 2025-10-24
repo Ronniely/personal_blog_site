@@ -57,3 +57,11 @@ export interface Comment {
 export interface BlogPostWithComments extends BlogPost {
   comments?: Comment[];
 }
+
+// API响应接口
+export interface IApiResponse<T = any> {
+  code: number;
+  message: string;
+  data?: T;
+  [key: string]: any;
+}

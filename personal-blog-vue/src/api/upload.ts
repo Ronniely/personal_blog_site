@@ -8,6 +8,7 @@ import type {
   PageResp,
   UploadFileReq,
 } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const UploadAPI = {
   /** 删除文件列表 */

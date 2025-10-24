@@ -1,5 +1,6 @@
 import request from "@/utils/request";
-import type { CategoryQueryReq, PageResp } from "./types";
+import type { Category, CategoryQueryReq, PageResp } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const CategoryAPI = {
   /** 分页获取文章分类列表 */

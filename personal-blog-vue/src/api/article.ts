@@ -9,7 +9,7 @@ import type {
   IdReq,
   PageResp,
 } from "./types";
-import type { IApiResponse } from "@/types/api";
+import type { IApiResponse } from "@/types";
 
 export const ArticleAPI = {
   /** 文章归档(时间轴) */

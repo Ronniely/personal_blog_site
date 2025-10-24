@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { Comment, CommentNewReq, CommentQueryReq, EmptyResp, IdReq, PageResp, UpdateCommentReq } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const CommentAPI = {
   /** 查询评论列表 */

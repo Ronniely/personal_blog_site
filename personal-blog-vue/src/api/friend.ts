@@ -1,5 +1,6 @@
 import request from "@/utils/request";
-import type { FriendQueryReq, PageResp } from "./types";
+import type { Friend, FriendQueryReq, PageResp } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const FriendAPI = {
   /** 分页获取友链列表 */

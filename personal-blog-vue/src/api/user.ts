@@ -12,6 +12,7 @@ import type {
   UserInfoResp,
   UserLikeResp,
 } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const UserAPI = {
   /** 删除用户绑定第三方平台账号 */

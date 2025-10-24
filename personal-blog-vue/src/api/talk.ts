@@ -1,5 +1,12 @@
 import request from "@/utils/request";
-import type { EmptyResp, IdReq, PageResp, Talk, TalkQueryReq } from "./types";
+import type {
+  EmptyResp,
+  IdReq,
+  PageResp,
+  Talk,
+  TalkQueryReq,
+} from "./types";
+import type { IApiResponse } from "@/types";
 
 export const TalkAPI = {
   /** 分页获取说说列表 */

@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import type { IApiResponse } from "@/types";
 
 export const WebsocketAPI = {
   /** WebSocket消息 */

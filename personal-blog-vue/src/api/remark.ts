@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { PageResp, Remark, RemarkNewReq, RemarkQueryReq } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const RemarkAPI = {
   /** 分页获取留言列表 */

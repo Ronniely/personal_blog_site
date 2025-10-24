@@ -1,5 +1,6 @@
 import request from "@/utils/request";
 import type { PageResp, TagQueryReq } from "./types";
+import type { IApiResponse } from "@/types";
 
 export const TagAPI = {
   /** 分页获取标签列表 */
