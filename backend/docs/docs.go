@@ -390,6 +390,747 @@ const docTemplate = `{
                 }
             }
         },
+        "/blog-api/v1/album/find_album_list": {
+            "post": {
+                "description": "获取相册列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "相册"
+                ],
+                "summary": "获取相册列表",
+                "responses": {
+                    "200": {
+                        "description": "获取相册列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/album/find_photo_list": {
+            "post": {
+                "description": "根据相册ID获取照片列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "相册"
+                ],
+                "summary": "获取相册下的照片列表",
+                "responses": {
+                    "200": {
+                        "description": "获取照片列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/album/get_album": {
+            "post": {
+                "description": "根据相册ID获取相册详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "相册"
+                ],
+                "summary": "获取相册详情",
+                "responses": {
+                    "200": {
+                        "description": "获取相册成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/get_article_archives": {
+            "post": {
+                "description": "获取文章归档(时间轴)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "文章归档",
+                "responses": {
+                    "200": {
+                        "description": "获取文章归档成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/get_article_classify_category": {
+            "post": {
+                "description": "通过分类获取文章列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "通过分类获取文章列表",
+                "responses": {
+                    "200": {
+                        "description": "获取分类文章列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/get_article_classify_tag": {
+            "post": {
+                "description": "通过标签获取文章列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "通过标签获取文章列表",
+                "responses": {
+                    "200": {
+                        "description": "获取标签文章列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/get_article_details": {
+            "post": {
+                "description": "根据文章ID获取文章详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "获取文章详情",
+                "responses": {
+                    "200": {
+                        "description": "获取文章详情成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/get_article_home_list": {
+            "post": {
+                "description": "获取首页文章列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "获取首页文章列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取首页文章列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/get_article_recommend": {
+            "post": {
+                "description": "获取首页推荐文章列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "获取首页推荐文章列表",
+                "responses": {
+                    "200": {
+                        "description": "获取推荐文章列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/article/like_article": {
+            "post": {
+                "description": "点赞文章",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文章"
+                ],
+                "summary": "点赞文章",
+                "responses": {
+                    "200": {
+                        "description": "点赞文章成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/comment/add_comment": {
+            "post": {
+                "description": "创建评论",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论"
+                ],
+                "summary": "创建评论",
+                "responses": {
+                    "200": {
+                        "description": "创建评论成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/comment/find_comment_list": {
+            "post": {
+                "description": "查询评论列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论"
+                ],
+                "summary": "查询评论列表",
+                "responses": {
+                    "200": {
+                        "description": "获取评论列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/comment/find_comment_recent_list": {
+            "post": {
+                "description": "查询最新评论回复列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论"
+                ],
+                "summary": "查询最新评论回复列表",
+                "responses": {
+                    "200": {
+                        "description": "获取最新评论列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/comment/find_comment_reply_list": {
+            "post": {
+                "description": "查询评论回复列表，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论"
+                ],
+                "summary": "查询评论回复列表",
+                "responses": {
+                    "200": {
+                        "description": "获取评论回复列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/comment/like_comment": {
+            "post": {
+                "description": "点赞评论",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论"
+                ],
+                "summary": "点赞评论",
+                "responses": {
+                    "200": {
+                        "description": "点赞评论成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/comment/update_comment": {
+            "post": {
+                "description": "更新评论",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论"
+                ],
+                "summary": "更新评论",
+                "responses": {
+                    "200": {
+                        "description": "更新评论成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/delete_user_bind_third_party": {
+            "post": {
+                "description": "删除用户绑定第三方平台账号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "删除用户绑定第三方平台账号",
+                "responses": {
+                    "200": {
+                        "description": "删除用户绑定第三方平台账号成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/get_user_info": {
+            "get": {
+                "description": "获取用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "获取用户信息",
+                "responses": {
+                    "200": {
+                        "description": "获取用户信息成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/get_user_like": {
+            "get": {
+                "description": "获取用户点赞列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "获取用户点赞列表",
+                "responses": {
+                    "200": {
+                        "description": "获取用户点赞列表成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/update_user_avatar": {
+            "post": {
+                "description": "修改用户头像",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "修改用户头像",
+                "responses": {
+                    "200": {
+                        "description": "修改用户头像成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/update_user_bind_email": {
+            "post": {
+                "description": "修改用户绑定邮箱",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "修改用户绑定邮箱",
+                "responses": {
+                    "200": {
+                        "description": "修改用户绑定邮箱成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/update_user_bind_phone": {
+            "post": {
+                "description": "修改用户绑定手机号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "修改用户绑定手机号",
+                "responses": {
+                    "200": {
+                        "description": "修改用户绑定手机号成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/update_user_bind_third_party": {
+            "post": {
+                "description": "修改用户绑定第三方平台账号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "修改用户绑定第三方平台账号",
+                "responses": {
+                    "200": {
+                        "description": "修改用户绑定第三方平台账号成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/update_user_info": {
+            "post": {
+                "description": "修改用户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "修改用户信息",
+                "responses": {
+                    "200": {
+                        "description": "修改用户信息成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog-api/v1/user/update_user_password": {
+            "post": {
+                "description": "修改用户密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "修改用户密码",
+                "responses": {
+                    "200": {
+                        "description": "修改用户密码成功",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/categories": {
             "get": {
                 "description": "获取所有文章分类",
@@ -658,125 +1399,64 @@ const docTemplate = `{
             }
         },
         "models.Article": {
-            "description": "文章信息",
             "type": "object",
             "properties": {
-                "authorId": {
-                    "description": "作者ID",
-                    "type": "string",
-                    "example": "1"
+                "article_content": {
+                    "type": "string"
                 },
-                "category": {
-                    "description": "分类信息",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Category"
-                        }
-                    ]
+                "article_cover": {
+                    "type": "string"
                 },
-                "categoryId": {
-                    "description": "分类ID",
-                    "type": "string",
-                    "example": "1"
+                "article_title": {
+                    "type": "string"
                 },
-                "content": {
-                    "description": "文章内容",
-                    "type": "string",
-                    "example": "文章内容..."
+                "article_type": {
+                    "type": "integer"
                 },
-                "coverImage": {
-                    "description": "封面图片URL",
-                    "type": "string",
-                    "example": "https://example.com/image.jpg"
+                "category_id": {
+                    "type": "string"
                 },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string",
-                    "example": "2023-01-01T00:00:00Z"
-                },
-                "excerpt": {
-                    "description": "文章摘要",
-                    "type": "string",
-                    "example": "文章摘要..."
+                "created_at": {
+                    "type": "string"
                 },
                 "id": {
-                    "description": "文章ID",
-                    "type": "string",
-                    "example": "1"
+                    "type": "string"
                 },
-                "likes": {
-                    "description": "点赞数",
-                    "type": "integer",
-                    "example": 10
+                "is_top": {
+                    "type": "integer"
                 },
-                "published": {
-                    "description": "是否发布",
-                    "type": "boolean",
-                    "example": true
+                "original_url": {
+                    "type": "string"
                 },
-                "tags": {
-                    "description": "标签列表",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Tag"
-                    }
+                "status": {
+                    "type": "integer"
                 },
-                "title": {
-                    "description": "文章标题",
-                    "type": "string",
-                    "example": "文章标题"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string",
-                    "example": "2023-01-01T00:00:00Z"
-                },
-                "views": {
-                    "description": "浏览量",
-                    "type": "integer",
-                    "example": 100
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
-        "models.Category": {
-            "description": "文章分类信息",
+        "v1.Response": {
+            "description": "统一API响应格式",
             "type": "object",
             "properties": {
-                "count": {
-                    "description": "文章数量",
+                "code": {
+                    "description": "状态码",
                     "type": "integer",
-                    "example": 10
+                    "example": 200
                 },
-                "id": {
-                    "description": "分类ID",
-                    "type": "string",
-                    "example": "1"
+                "data": {
+                    "description": "数据"
                 },
-                "name": {
-                    "description": "分类名称",
+                "message": {
+                    "description": "消息",
                     "type": "string",
-                    "example": "技术"
-                }
-            }
-        },
-        "models.Tag": {
-            "description": "文章标签信息",
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "文章数量",
-                    "type": "integer",
-                    "example": 5
+                    "example": "success"
                 },
-                "id": {
-                    "description": "标签ID",
+                "trace_id": {
+                    "description": "跟踪ID",
                     "type": "string",
-                    "example": "1"
-                },
-                "name": {
-                    "description": "标签名称",
-                    "type": "string",
-                    "example": "Go"
+                    "example": "1234567890"
                 }
             }
         }

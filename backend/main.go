@@ -14,6 +14,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jayden/personal-blog-backend/api"
+	v1 "github.com/jayden/personal-blog-backend/api/v1"
 	"github.com/jayden/personal-blog-backend/config"
 	"github.com/jayden/personal-blog-backend/db"
 	_ "github.com/jayden/personal-blog-backend/docs" // 这里需要导入 docs 包
@@ -78,7 +79,7 @@ func main() {
 	r := mux.NewRouter()
 
 	// 设置API路由
-	apiRouter := r.PathPrefix("/api").Subrouter()
+	apiRouter := r.PathPrefix("/blog-api/v1").Subrouter()
 	apiRouter.HandleFunc("/login", api.LoginHandler).Methods("POST")
 	apiRouter.HandleFunc("/register", api.RegisterHandler).Methods("POST")
 	apiRouter.HandleFunc("/health", api.HealthCheck).Methods("GET")
@@ -99,6 +100,52 @@ func main() {
 	// 分类和标签文章路由
 	apiRouter.HandleFunc("/articles/category", api.GetArticlesByCategoryHandler).Methods("GET")
 	apiRouter.HandleFunc("/articles/tag", api.GetArticlesByTagHandler).Methods("GET")
+
+	// v1 API路由
+	v1Router := r.PathPrefix("/blog-api/v1").Subrouter()
+
+	// 相册相关路由
+	v1Router.HandleFunc("/album/find_album_list", v1.FindAlbumListHandler).Methods("POST")
+	v1Router.HandleFunc("/album/find_photo_list", v1.FindPhotoListHandler).Methods("POST")
+	v1Router.HandleFunc("/album/get_album", v1.GetAlbumHandler).Methods("POST")
+
+	// 文章相关路由
+	v1Router.HandleFunc("/article/get_article_archives", v1.GetArticleArchivesHandler).Methods("POST")
+	v1Router.HandleFunc("/article/get_article_classify_category", v1.GetArticleClassifyCategoryHandler).Methods("POST")
+	v1Router.HandleFunc("/article/get_article_classify_tag", v1.GetArticleClassifyTagHandler).Methods("POST")
+	v1Router.HandleFunc("/article/get_article_details", v1.GetArticleDetailsHandler).Methods("POST")
+	v1Router.HandleFunc("/article/get_article_home_list", v1.GetArticleHomeListHandler).Methods("POST")
+	v1Router.HandleFunc("/article/get_article_recommend", v1.GetArticleRecommendHandler).Methods("POST")
+	v1Router.HandleFunc("/article/like_article", v1.LikeArticleHandler).Methods("POST")
+
+	// 评论相关路由
+	v1Router.HandleFunc("/comment/find_comment_list", v1.FindCommentListHandler).Methods("POST")
+	v1Router.HandleFunc("/comment/find_comment_recent_list", v1.FindCommentRecentListHandler).Methods("POST")
+	v1Router.HandleFunc("/comment/find_comment_reply_list", v1.FindCommentReplyListHandler).Methods("POST")
+	v1Router.HandleFunc("/comment/add_comment", v1.AddCommentHandler).Methods("POST")
+	v1Router.HandleFunc("/comment/like_comment", v1.LikeCommentHandler).Methods("POST")
+	v1Router.HandleFunc("/comment/update_comment", v1.UpdateCommentHandler).Methods("POST")
+
+	// 用户相关路由
+	v1Router.HandleFunc("/user/delete_user_bind_third_party", v1.DeleteUserBindThirdPartyHandler).Methods("POST")
+	v1Router.HandleFunc("/user/get_user_info", v1.GetUserInfoHandler).Methods("GET")
+	v1Router.HandleFunc("/user/get_user_like", v1.GetUserLikeHandler).Methods("GET")
+	v1Router.HandleFunc("/user/update_user_avatar", v1.UpdateUserAvatarHandler).Methods("POST")
+	v1Router.HandleFunc("/user/update_user_bind_email", v1.UpdateUserBindEmailHandler).Methods("POST")
+	v1Router.HandleFunc("/user/update_user_bind_phone", v1.UpdateUserBindPhoneHandler).Methods("POST")
+	v1Router.HandleFunc("/user/update_user_bind_third_party", v1.UpdateUserBindThirdPartyHandler).Methods("POST")
+	v1Router.HandleFunc("/user/update_user_info", v1.UpdateUserInfoHandler).Methods("POST")
+	v1Router.HandleFunc("/user/update_user_password", v1.UpdateUserPasswordHandler).Methods("POST")
+
+	// 博客相关路由
+	v1Router.HandleFunc("/blog", v1.GetBlogHomeInfoHandler).Methods("GET")
+	v1Router.HandleFunc("/blog/about_me", v1.GetAboutMeHandler).Methods("GET")
+
+	// 游客相关路由
+	v1Router.HandleFunc("/get_tourist_info", v1.GetTouristInfoHandler).Methods("GET")
+
+	// 说说相关路由
+	v1Router.HandleFunc("/talk/find_talk_list", v1.FindTalkListHandler).Methods("POST")
 
 	// Swagger 文档路由
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
